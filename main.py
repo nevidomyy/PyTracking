@@ -14,7 +14,7 @@ headers = {
 
 track = 'LM951174328CN'
 
-# Определяем службу доставки
+# define the delivery service
 response = requests.get('https://gdeposylka.ru/api/v4/tracker/detect/' + track, headers=headers)
 if response.status_code == 200:
     answer = response.json()
@@ -22,7 +22,7 @@ if response.status_code == 200:
     slug = (answer['data'][0]['courier']['slug'])
     print(slug)
 
-    # Запрос по посылке
+    # getting info for track
     response = requests.get('https://gdeposylka.ru/api/v4/tracker/' + slug + '/' + track, headers=headers)
     if response.status_code == 200:
         answer = response.json()
