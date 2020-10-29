@@ -14,7 +14,6 @@ def jprint(obj):
 
 
 def tracking(track):
-
     # define the delivery service
     response = requests.get('https://gdeposylka.ru/api/v4/tracker/detect/' + track, headers=headers)
     if response.status_code == 200:
@@ -35,7 +34,7 @@ def tracking(track):
 
 
 TrackNumber = '10209751370135'
-# Start post tracking function and writing result into JSAnswer
+# start post tracking function and writing result into JSAnswer
 JSAnswer = tracking(TrackNumber)
-# Displaying an array to the screen
+# displaying an array to the screen
 jprint(JSAnswer)
