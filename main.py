@@ -49,6 +49,7 @@ def tracking(track):
         return 'Error: 404'
 
 
+# contains conditions for selecting track numbers
 def get_track_numbers():
     connect = create_connection(options.My_Host, options.My_User, options.My_Password, options.My_DB_name)
     query = connect.cursor()
