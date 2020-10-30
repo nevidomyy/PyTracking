@@ -2,6 +2,7 @@ import requests
 import json
 import mysql.connector
 from mysql.connector import Error
+import time
 import options
 
 
@@ -21,6 +22,7 @@ def create_connection(host_name, user_name, user_password, db_name):
     return connection
 
 
+# displaying an array to the screen. for example, jprint(JSAnswer)
 def jprint(obj):
     # create a formatted string of the Python JSON object
     # ensure_ascii = False => is using for display russian characters
@@ -59,13 +61,20 @@ def get_track_numbers():
     return query_result
 
 
-TrackNumber = '10209751370135'
-# start post tracking function and writing result into JSAnswer
-JSAnswer = tracking(TrackNumber)
-# displaying an array to the screen
-# jprint(JSAnswer)
+def parsing(track):
+    jprint(track)
+    return
+
+
 results = get_track_numbers()
-row = 0
-for number in range(100 and len(results)):
-    print(str(results[row][0]) + ' ' + str(results[row][1]))
-    row = row + 1
+row, number = 0, 0
+# in range(count) count - the number of processed tracks per run
+for number in range(options.track_count):
+    if number < len(results):
+        print(str(row+1) + '. ' + 'Обработка трек-номера: ' + str(results[row][0]) + ' ' + str(results[row][1]))
+        TrackNumber = results[row][1]
+        # start post tracking function and writing result into JSAnswer
+        JSAnswer = tracking(TrackNumber)
+        parsing(JSAnswer)
+        row = row + 1
+        time.sleep(1)
