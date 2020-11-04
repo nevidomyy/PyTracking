@@ -22,8 +22,11 @@ def create_connection(host_name: str, user_name: str, user_password: str, db_nam
     return connection
 
 
-# displaying an array to the screen. for example, jprint(JSAnswer)
 def jprint(obj):
+    """
+    :param obj: JSON array
+    :return: displaying an array to the screen. for example, jprint(JSAnswer)
+    """
     # create a formatted string of the Python JSON object
     # ensure_ascii = False => is using for display russian characters
     text = json.dumps(obj, sort_keys=True, ensure_ascii=False, indent=4)
@@ -57,6 +60,9 @@ def tracking(track):
 
 # contains conditions for selecting track numbers
 def get_track_numbers():
+    """
+    :return: array of track numbers where ID > StartIndex
+    """
     connection = create_connection(options.My_Host, options.My_User, options.My_Password, options.My_DB_name)
     query = connection.cursor()
     query.execute("SELECT ID, Trackcode FROM aop_rsticketspro_ticket_notes WHERE ID > "
@@ -66,20 +72,23 @@ def get_track_numbers():
 
 
 def parsing(trackinfo):
-    # ToDo: array parsing to database from json track info
+    # ToDo: function parsing track info to database from json
     jprint(trackinfo)
     return
 
 
 results = get_track_numbers()
-row, number = 0, 0
+row = 0
 # in range(count) count - the number of processed tracks per run
 for number in range(options.track_count):
     if number < len(results):
-        print(f'{row + 1}. Обработка трек-номера: {results[row][0]}{results[row][1]}')
+        print(f'{row + 1}. Обработка трек-номера: {results[row][0]} {results[row][1]}')
         TrackNumber = results[row][1]
-        # start post tracking function and writing result into JSAnswer
         JSAnswer = tracking(TrackNumber)
-        parsing(JSAnswer)
-        row = row + 1
         time.sleep(1)
+        # parsing(JSAnswer)
+        if number == (options.track_count - 1):
+            print(f'Обработан последний элемент c ID: {results[row][0]}')
+            # ToDo: добавить код для записи последнего обработанного элемента в таблицу базы
+    row = row + 1
+
