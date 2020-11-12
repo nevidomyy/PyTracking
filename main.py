@@ -15,14 +15,14 @@ def create_connection(host_name: str, user_name: str, user_password: str, db_nam
             passwd=user_password,
             database=db_name
         )
-        print("Connection to MySQL DB successful")
+        # print("Connection to MySQL DB successful")
     except Error as e:
         print(f"The error '{e}' occurred")
 
     return connection
 
 
-def jprint(obj):
+def jprint(obj: json):
     """
     :param obj: JSON array
     :return: displaying an array to the screen. for example, jprint(JSAnswer)
@@ -33,7 +33,7 @@ def jprint(obj):
     print(text)
 
 
-def tracking(track):
+def tracking(track: str):
     """
     :define: delivery service and get track info
     :param track: Track number from BD
@@ -58,10 +58,9 @@ def tracking(track):
         return 'Error: 404'
 
 
-# contains conditions for selecting track numbers
 def get_track_numbers():
     """
-    :return: array of track numbers where ID > StartIndex
+    :return: array [ID] [TrackNumber] of track numbers where ID > StartIndex
     """
     connection = create_connection(options.My_Host, options.My_User, options.My_Password, options.My_DB_name)
     query = connection.cursor()
@@ -71,24 +70,49 @@ def get_track_numbers():
     return query_result
 
 
-def parsing(trackinfo):
+def parsing(trackinfo: json):
+    """
+    :param trackinfo: JSON info from function tracking(track: str)
+    :return: none
+    """
     # ToDo: function parsing track info to database from json
     jprint(trackinfo)
     return
 
 
+def write_last_elem(last_elem: int):
+    """
+    :define: writing number of last processed ID in DataBase, Table - StartIndex
+    :return: none
+    :param last_elem: last processed ID from array of function get_track_numbers or 0 if last_elem = last database elem
+    """
+    connection = create_connection(options.My_Host, options.My_User, options.My_Password, options.My_DB_name)
+    query = connection.cursor()
+    # get bigger ID from database
+    query.execute('SELECT ID FROM aop_rsticketspro_ticket_notes ORDER BY id DESC LIMIT 1')
+    query_result = query.fetchone()
+    if query_result[0] == last_elem:
+        last_elem = 0
+    query.execute(f'UPDATE StartIndex SET LastProcessedID = {last_elem}')
+    connection.commit()
+    return
+
+
 results = get_track_numbers()
-row = 0
+num = 0
 # in range(count) count - the number of processed tracks per run
 for number in range(options.track_count):
     if number < len(results):
-        print(f'{row + 1}. Обработка трек-номера: {results[row][0]} {results[row][1]}')
-        TrackNumber = results[row][1]
-        JSAnswer = tracking(TrackNumber)
+        TrackNumber = results[number][1]
+        if TrackNumber is not None:
+            num = num + 1
+            print(f'{num}. Обработка трек-номера: {results[number][0]} {results[number][1]}')
+            JSAnswer = tracking(TrackNumber)
+        else:
+            print(f'ОШИБКА: Пустой трек-номер в строке с ID {results[number][0]}')
         time.sleep(1)
         # parsing(JSAnswer)
-        if number == (options.track_count - 1):
-            print(f'Обработан последний элемент c ID: {results[row][0]}')
-            # ToDo: добавить код для записи последнего обработанного элемента в таблицу базы
-    row = row + 1
-
+        # writing ID for last processed Track in DataBase StartIndex Table
+        if number == (options.track_count - 1) or number == len(results) - 1:
+            print(f'Запись в базу данных ID последнего обработанного элемента: ID = {results[number][0]}')
+            write_last_elem(results[number][0])
