@@ -85,6 +85,8 @@ def get_recorded_status(tracknumber: str):
 
 def parsing(trackinfo: json, tracknumber: str):
     """
+    :define: Receives information and processes it according to the rules.
+     Writes the result of the form: "status. Location" to the Database in the Status column
     :param trackinfo: JSON info from function tracking(track: str)
     :param tracknumber: current TrackNumber
     :return: none
@@ -102,7 +104,7 @@ def parsing(trackinfo: json, tracknumber: str):
     try:
         status_name = trackinfo["data"]["checkpoints"][0]["status_name"]
     except TypeError:
-        # if Status in array JSON doesnt exist recording temporary status
+        # if Status in array JSON doesnt exist - recording temporary status
         status_name = 'Ожидается отправка'
 
     try:
