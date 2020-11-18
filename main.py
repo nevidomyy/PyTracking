@@ -46,6 +46,7 @@ def tracking(track: str):
         if answer['result'] == 'success':
             slug = answer['data'][0]['courier']['slug']
             # getting info for track
+            time.sleep(1)
             response = requests.get('https://gdeposylka.ru/api/v4/tracker/' + slug + '/' +
                                     track, headers=options.headers)
             if response.status_code == 200:
@@ -70,13 +71,55 @@ def get_track_numbers():
     return query_result
 
 
-def parsing(trackinfo: json):
+def get_recorded_status(tracknumber: str):
+    """
+    :param tracknumber: current TrackNumber
+    :return: recorded status for given TrackNumber from DataBase
+    """
+    connection = create_connection(options.My_Host, options.My_User, options.My_Password, options.My_DB_name)
+    query = connection.cursor()
+    query.execute(f'SELECT Status FROM aop_rsticketspro_ticket_notes WHERE Trackcode = "{tracknumber}"')
+    query_result = query.fetchone()
+    return query_result[0]
+
+
+def parsing(trackinfo: json, tracknumber: str):
     """
     :param trackinfo: JSON info from function tracking(track: str)
+    :param tracknumber: current TrackNumber
     :return: none
     """
-    # ToDo: function parsing track info to database from json
-    jprint(trackinfo)
+    recorded_status = get_recorded_status(tracknumber)
+    status_stoplist = ['На складе', 'Доставка по адресу', 'Открыт спор']
+    status_renamelist = ['Посылка возвращена', 'Посылка возвращается отправителю']
+    location_stoplist = ['Темрюк', 'Тамань', 'Тамань 1']
+    location_renamelist = ['Таманский Почтамт']
+
+    if recorded_status in status_stoplist:
+        print(f'ПРОПУСК ОБРАБОТКИ... Причина: Статус из БД = {recorded_status}')
+        return
+
+    try:
+        status_name = trackinfo["data"]["checkpoints"][0]["status_name"]
+    except TypeError:
+        # if Status in array JSON doesnt exist recording temporary status
+        status_name = 'Ожидается отправка'
+
+    try:
+        track_location = trackinfo["data"]["checkpoints"]["0"]["location_translated"]
+    except TypeError:
+        track_location = ''
+
+    if track_location in location_stoplist:
+        track_location = ''
+    if track_location in location_renamelist:
+        track_location = 'Краснодарский Почтамт'
+    if status_name in status_renamelist:
+        status_name = 'Прибыл в пункт назначения'
+
+    print(f'{status_name}. {track_location}')
+    # ToDo: record into DataBase Status = {status_name}. {track_location}
+    # jprint(trackinfo)
     return
 
 
@@ -108,10 +151,10 @@ for number in range(options.track_count):
             num = num + 1
             print(f'{num}. Обработка трек-номера: {results[number][0]} {results[number][1]}')
             JSAnswer = tracking(TrackNumber)
+            parsing(JSAnswer, TrackNumber)
         else:
-            print(f'ОШИБКА: Пустой трек-номер в строке с ID {results[number][0]}')
+            print(f'ПРОПУСК ОБРАБОТКИ... Причина: Пустой трек-номер в строке с ID {results[number][0]}')
         time.sleep(1)
-        # parsing(JSAnswer)
         # writing ID for last processed Track in DataBase StartIndex Table
         if number == (options.track_count - 1) or number == len(results) - 1:
             print(f'Запись в базу данных ID последнего обработанного элемента: ID = {results[number][0]}')
