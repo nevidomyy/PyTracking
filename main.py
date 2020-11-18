@@ -65,8 +65,8 @@ def get_track_numbers():
     """
     connection = create_connection(options.My_Host, options.My_User, options.My_Password, options.My_DB_name)
     query = connection.cursor()
-    query.execute("SELECT ID, Trackcode FROM aop_rsticketspro_ticket_notes WHERE ID > "
-                  "(SELECT LastProcessedID FROM StartIndex)")
+    query.execute(f'SELECT ID, Trackcode FROM {options.Main_Table} WHERE ID > '
+                  f'(SELECT LastProcessedID FROM {options.Support_Table})')
     query_result = query.fetchall()
     return query_result
 
@@ -78,7 +78,7 @@ def get_recorded_status(tracknumber: str):
     """
     connection = create_connection(options.My_Host, options.My_User, options.My_Password, options.My_DB_name)
     query = connection.cursor()
-    query.execute(f'SELECT Status FROM aop_rsticketspro_ticket_notes WHERE Trackcode = "{tracknumber}"')
+    query.execute(f'SELECT Status FROM {options.Main_Table} WHERE Trackcode = "{tracknumber}"')
     query_result = query.fetchone()
     return query_result[0]
 
@@ -134,11 +134,11 @@ def write_last_elem(last_elem: int):
     connection = create_connection(options.My_Host, options.My_User, options.My_Password, options.My_DB_name)
     query = connection.cursor()
     # get bigger ID from database
-    query.execute('SELECT ID FROM aop_rsticketspro_ticket_notes ORDER BY id DESC LIMIT 1')
+    query.execute(f'SELECT ID FROM {options.Main_Table} ORDER BY id DESC LIMIT 1')
     query_result = query.fetchone()
     if query_result[0] == last_elem:
         last_elem = 0
-    query.execute(f'UPDATE StartIndex SET LastProcessedID = {last_elem}')
+    query.execute(f'UPDATE {options.Support_Table} SET LastProcessedID = {last_elem}')
     connection.commit()
     return
 
