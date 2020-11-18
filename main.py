@@ -33,7 +33,7 @@ def jprint(obj: json):
     print(text)
 
 
-def tracking(track: str):
+def tracking(track: str) -> json:
     """
     :define: delivery service and get track info
     :param track: Track number from BD
@@ -118,10 +118,18 @@ def parsing(trackinfo: json, tracknumber: str):
         track_location = 'renamed location'
     if status_name in status_renamelist:
         status_name = 'Прибыл в пункт назначения'
-
-    print(f'{status_name}. {track_location}')
-    # ToDo: record into DataBase Status = {status_name}. {track_location}
+    status = f'{status_name}.{track_location}'
     # jprint(trackinfo)
+
+    connection = create_connection(options.My_Host, options.My_User, options.My_Password, options.My_DB_name)
+    query = connection.cursor()
+    # writing status and location into Database, column "status"
+    try:
+        query.execute(f'UPDATE {options.Main_Table} SET Status = "{status}" WHERE Trackcode = "{tracknumber}"')
+        print(f'УСПЕХ. Статус записан в БД для трек-номера {tracknumber}. Записанный статус: {status}')
+    except Error as e:
+        print(f'ОШИБКА при записи статуса в БД: {e}.')
+    connection.commit()
     return
 
 
