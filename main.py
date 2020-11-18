@@ -141,8 +141,13 @@ def write_last_elem(last_elem: int):
     query_result = query.fetchone()
     if query_result[0] == last_elem:
         last_elem = 0
-    query.execute(f'UPDATE {options.Support_Table} SET LastProcessedID = {last_elem}')
-    connection.commit()
+    try:
+        query.execute(f'UPDATE {options.Support_Table} SET LastProcessedID = {last_elem}')
+        connection.commit()
+        print(f'Завершено... Запись последнего обработанного элемента прошла успешно.')
+    except Error as e:
+        print(f'Ошибка записи последнего обработанного элемента в БД: {e}')
+
     return
 
 
@@ -152,9 +157,9 @@ num = 0
 for number in range(options.track_count):
     if number < len(results):
         TrackNumber = results[number][1]
+        num = num + 1
+        print(f'{num}. Обработка трек-номера: {results[number][0]} {results[number][1]}')
         if TrackNumber is not None:
-            num = num + 1
-            print(f'{num}. Обработка трек-номера: {results[number][0]} {results[number][1]}')
             JSAnswer = tracking(TrackNumber)
             parsing(JSAnswer, TrackNumber)
         else:
@@ -162,5 +167,5 @@ for number in range(options.track_count):
         time.sleep(1)
         # writing ID for last processed Track in DataBase StartIndex Table
         if number == (options.track_count - 1) or number == len(results) - 1:
-            print(f'Запись в базу данных ID последнего обработанного элемента: ID = {results[number][0]}')
+            print(f'Завершение... Запись в базу данных ID последнего обработанного элемента: ID = {results[number][0]}')
             write_last_elem(results[number][0])
