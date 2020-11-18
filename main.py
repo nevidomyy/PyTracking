@@ -92,12 +92,7 @@ def parsing(trackinfo: json, tracknumber: str):
     :return: none
     """
     recorded_status = get_recorded_status(tracknumber)
-    status_stoplist = ['Home', 'Delivery', 'Fck']
-    status_renamelist = ['returned', 'returned2']
-    location_stoplist = ['city', 'city2', 'city3']
-    location_renamelist = ['location to rename']
-
-    if recorded_status in status_stoplist:
+    if recorded_status in options.status_stoplist:
         print(f'ПРОПУСК ОБРАБОТКИ... Причина: Статус из БД = {recorded_status}')
         return
 
@@ -112,11 +107,11 @@ def parsing(trackinfo: json, tracknumber: str):
     except TypeError:
         track_location = ''
 
-    if track_location in location_stoplist:
+    if track_location in options.location_stoplist:
         track_location = ''
-    if track_location in location_renamelist:
+    if track_location in options.location_renamelist:
         track_location = 'renamed location'
-    if status_name in status_renamelist:
+    if status_name in options.status_renamelist:
         status_name = 'Прибыл в пункт назначения'
     status = f'{status_name}.{track_location}'
     # jprint(trackinfo)
