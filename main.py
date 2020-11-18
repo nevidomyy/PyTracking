@@ -95,7 +95,7 @@ def parsing(trackinfo: json, tracknumber: str):
     status_stoplist = ['Home', 'Delivery', 'Fck']
     status_renamelist = ['returned', 'returned2']
     location_stoplist = ['city', 'city2', 'city3']
-    location_renamelist = ['name']
+    location_renamelist = ['location to rename']
 
     if recorded_status in status_stoplist:
         print(f'ПРОПУСК ОБРАБОТКИ... Причина: Статус из БД = {recorded_status}')
@@ -115,7 +115,7 @@ def parsing(trackinfo: json, tracknumber: str):
     if track_location in location_stoplist:
         track_location = ''
     if track_location in location_renamelist:
-        track_location = 'renamed name'
+        track_location = 'renamed location'
     if status_name in status_renamelist:
         status_name = 'Прибыл в пункт назначения'
 
