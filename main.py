@@ -110,7 +110,7 @@ def parsing(trackinfo: json, tracknumber: str):
     if track_location in options.location_stoplist:
         track_location = ''
     if track_location in options.location_renamelist:
-        track_location = 'renamed location'
+        track_location = options.renamed_location
     if status_name in options.status_renamelist:
         status_name = 'Прибыл в пункт назначения'
     status = f'{status_name}.{track_location}'
@@ -121,7 +121,7 @@ def parsing(trackinfo: json, tracknumber: str):
     # writing status and location into Database, column "status"
     try:
         query.execute(f'UPDATE {options.Main_Table} SET Status = "{status}" WHERE Trackcode = "{tracknumber}"')
-        print(f'УСПЕХ. Статус записан в БД для трек-номера {tracknumber}. Записанный статус: {status}')
+        print(f'УСПЕХ! Для трек-номера {tracknumber} в базу данных записан статус: {status} ')
     except Error as e:
         print(f'ОШИБКА при записи статуса в БД: {e}.')
     connection.commit()
