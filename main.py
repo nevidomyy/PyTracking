@@ -68,6 +68,7 @@ def get_track_numbers():
     query.execute(f'SELECT ID, Trackcode FROM {options.Main_Table} WHERE ID > '
                   f'(SELECT LastProcessedID FROM {options.Support_Table})')
     query_result = query.fetchall()
+
     return query_result
 
 
@@ -80,6 +81,7 @@ def get_recorded_status(tracknumber: str):
     query = connection.cursor()
     query.execute(f'SELECT Status FROM {options.Main_Table} WHERE Trackcode = "{tracknumber}"')
     query_result = query.fetchone()
+
     return query_result[0]
 
 
@@ -125,7 +127,6 @@ def parsing(trackinfo: json, tracknumber: str):
     except Error as e:
         print(f'ОШИБКА при записи статуса в БД: {e}.')
     connection.commit()
-    return
 
 
 def write_last_elem(last_elem: int):
