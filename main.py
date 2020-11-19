@@ -126,6 +126,7 @@ def parsing(trackinfo: json, tracknumber: str):
         print(f'УСПЕХ! Для трек-номера {tracknumber} в базу данных записан статус: {status} ')
     except Error as e:
         print(f'ОШИБКА при записи статуса в БД: {e}.')
+
     connection.commit()
 
 
