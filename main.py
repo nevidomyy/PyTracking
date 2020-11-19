@@ -39,7 +39,7 @@ def tracking(track: str) -> json:
     :param track: Track number from BD
     :return: json track info
     """
-    response = requests.get('https://gdeposylka.ru/api/v4/tracker/detect/' + track, headers=options.headers)
+    response = requests.get(f'https://gdeposylka.ru/api/v4/tracker/detect/{track}', headers=options.headers)
     if response.status_code == 200:
         answer = response.json()
         # if result of detecting delivery service is successful
@@ -47,8 +47,8 @@ def tracking(track: str) -> json:
             slug = answer['data'][0]['courier']['slug']
             # getting info for track
             time.sleep(1)
-            response = requests.get('https://gdeposylka.ru/api/v4/tracker/' + slug + '/' +
-                                    track, headers=options.headers)
+            response = requests.get(f'https://gdeposylka.ru/api/v4/tracker/{slug}/{track}',
+                                    headers=options.headers)
             if response.status_code == 200:
                 answer = response.json()
                 return answer
@@ -156,16 +156,17 @@ num = 0
 # in range(count) count - the number of processed tracks per run
 for number in range(options.track_count):
     if number < len(results):
+        ID = results[number][0]
         TrackNumber = results[number][1]
         num = num + 1
-        print(f'{num}. Обработка трек-номера: {results[number][0]} {results[number][1]}')
+        print(f'{num}. Обработка трек-номера: {ID} {TrackNumber}')
         if TrackNumber is not None:
             JSAnswer = tracking(TrackNumber)
             parsing(JSAnswer, TrackNumber)
         else:
-            print(f'ПРОПУСК ОБРАБОТКИ... Причина: Пустой трек-номер в строке с ID {results[number][0]}')
+            print(f'ПРОПУСК ОБРАБОТКИ... Причина: Пустой трек-номер в строке с ID {ID}')
         time.sleep(1)
         # writing ID for last processed Track in DataBase StartIndex Table
         if number == (options.track_count - 1) or number == len(results) - 1:
-            print(f'Завершение... Запись в базу данных ID последнего обработанного элемента: ID = {results[number][0]}')
-            write_last_elem(results[number][0])
+            print(f'Завершение... Запись в базу данных ID последнего обработанного элемента: ID = {ID}')
+            write_last_elem(ID)
