@@ -85,6 +85,27 @@ def get_recorded_status(tracknumber: str):
     return query_result[0]
 
 
+def rename_status(status_name: str, track_location: str):
+    """
+    :define: rename status from JSON
+    :param status_name: status_name from JSON
+    :param track_location: track_location from JSON
+    :return: new status_name for recording into Database
+    """
+    if track_location in options.location_stoplist:
+        track_location = ''
+    if track_location in options.location_renamelist:
+        track_location = options.renamed_location
+    if status_name in options.status_renamelist:
+        status_name = 'Прибыл в пункт назначения'
+    # change delivery status
+    for status_number in range(len(options.sfr)):
+        if status_name == options.sfr[status_number]:
+            status_name = options.sr[status_number]
+
+    return f'{status_name}.{track_location}'
+
+
 def parsing(trackinfo: json, tracknumber: str):
     """
     :define: Receives information and processes it according to the rules.
@@ -109,18 +130,7 @@ def parsing(trackinfo: json, tracknumber: str):
     except TypeError:
         track_location = ''
 
-    if track_location in options.location_stoplist:
-        track_location = ''
-    if track_location in options.location_renamelist:
-        track_location = options.renamed_location
-    if status_name in options.status_renamelist:
-        status_name = 'Прибыл в пункт назначения'
-    # change delivery status
-    for status_number in range(len(options.sfr)):
-        if status_name == options.sfr[status_number]:
-            status_name = options.sr[status_number]
-
-    status = f'{status_name}.{track_location}'
+    status = rename_status(status_name, track_location)
     # jprint(trackinfo)
 
     connection = create_connection(options.My_Host, options.My_User, options.My_Password, options.My_DB_name)
