@@ -69,7 +69,6 @@ def get_track_numbers():
     query.execute(f'SELECT ID, Trackcode FROM {options.Main_Table} WHERE ID > '
                   f'(SELECT LastProcessedID FROM {options.Support_Table})')
     query_result = query.fetchall()
-
     return query_result
 
 
@@ -116,6 +115,18 @@ def parsing(trackinfo: json, tracknumber: str):
         track_location = options.renamed_location
     if status_name in options.status_renamelist:
         status_name = 'Прибыл в пункт назначения'
+    if status_name == options.sfr1:
+        status_name = options.sr1
+    if status_name == options.sfr2:
+        status_name = options.sr2
+    if status_name == options.sfr3:
+        status_name = options.sr3
+    if status_name == options.sfr4:
+        status_name = options.sr4
+    if status_name == options.sfr5:
+        status_name = options.sr5
+    if status_name == options.sfr6:
+        status_name = options.sr6
     status = f'{status_name}.{track_location}'
     # jprint(trackinfo)
 
@@ -162,8 +173,8 @@ for number in range(options.track_count):
         ID = results[number][0]
         TrackNumber = results[number][1]
         num = num + 1
-        print(f'{num}. Обработка трек-номера: {ID} {TrackNumber}')
-        if TrackNumber is not None:
+        print(f'{num}. Обработка трек-номера: ID: {ID} TrackCode: {TrackNumber}')
+        if TrackNumber is not None and len(TrackNumber) != 0:
             JSAnswer = tracking(TrackNumber)
             parsing(JSAnswer, TrackNumber)
         else:
