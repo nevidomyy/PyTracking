@@ -18,8 +18,7 @@ def create_connection(host_name: str, user_name: str, user_password: str, db_nam
         # print("Connection to MySQL DB successful")
     except Error as e:
         print(f"The error '{e}' occurred")
-        print(f'ОШИБКА... Выполнение программы остановлено! Отсутствует подключение к БД.')
-        quit()
+        quit(f'ОШИБКА... Выполнение программы остановлено! Отсутствует подключение к БД.')
 
     return connection
 
