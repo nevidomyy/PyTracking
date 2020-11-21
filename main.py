@@ -135,7 +135,6 @@ def parsing(trackinfo: json, tracknumber: str):
         track_location = ''
     except IndexError:
         track_location = ''
-
     status = rename_status(status_name, track_location)
     # jprint(trackinfo)
 
@@ -182,7 +181,7 @@ for number in range(options.track_count):
         ID = results[number][0]
         TrackNumber = results[number][1]
         num = num + 1
-        print(f'{num} из {len(results)}. Обработка трек-номера: ID: {ID} TrackCode: {TrackNumber}')
+        print(f'{num} из {len(results)}. Обработка трек-номера c ID: {ID} TrackCode: {TrackNumber}')
         if TrackNumber is not None and len(TrackNumber) != 0:
             JSAnswer = tracking(TrackNumber)
             parsing(JSAnswer, TrackNumber)
