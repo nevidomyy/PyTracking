@@ -40,6 +40,7 @@ def tracking(track: str) -> json:
     :param track: Track number from BD
     :return: json track info
     """
+    time.sleep(1)
     response = requests.get(f'https://gdeposylka.ru/api/v4/tracker/detect/{track}', headers=options.headers)
     if response.status_code == 200:
         answer = response.json()
@@ -185,7 +186,6 @@ for number in range(options.track_count):
             parsing(JSAnswer, TrackNumber)
         else:
             print(f'ПРОПУСК ОБРАБОТКИ... Причина: Пустой трек-номер в строке с ID {ID}')
-        time.sleep(1)
         # writing ID for last processed Track in DataBase StartIndex Table
         if number == (options.track_count - 1) or number == len(results) - 1:
             print(f'Завершение... Запись в базу данных ID последнего обработанного элемента: ID = {ID}')
