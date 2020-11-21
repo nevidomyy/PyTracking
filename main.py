@@ -119,7 +119,6 @@ def parsing(trackinfo: json, tracknumber: str):
     for status_number in range(len(options.sfr)):
         if status_name == options.sfr[status_number]:
             status_name = options.sr[status_number]
-            print(status_name)
 
     status = f'{status_name}.{track_location}'
     # jprint(trackinfo)
