@@ -106,12 +106,13 @@ def rename_status(status_name: str, track_location: str):
     return f'{status_name}.{track_location}'
 
 
-def parsing(trackinfo: json, tracknumber: str):
+def parsing(trackinfo: json, tracknumber: str, track_id: int):
     """
     :define: Receives information and processes it according to the rules.
      Writes the result of the form: "status. Location" to the Database in the Status column
-    :param trackinfo: JSON info from function tracking(track: str)
-    :param tracknumber: current TrackNumber
+    :param: trackinfo: JSON info from function tracking(track: str)
+    :param: tracknumber: current TrackNumber
+    :param: id: current ID from database
     :return: none
     """
     recorded_status = get_recorded_status(tracknumber)
@@ -124,6 +125,10 @@ def parsing(trackinfo: json, tracknumber: str):
     except TypeError:
         # if Status in array JSON doesnt exist - recording temporary status
         status_name = 'Ожидается отправка'
+    except IndexError as e:
+        print(f'Произошла ошибка обновления статуса: {e} Попробуйте позже...')
+        status_name = 'Ожидается отправка'
+        write_last_elem(track_id)
 
     try:
         track_location = trackinfo["data"]["checkpoints"]["0"]["location_translated"]
@@ -176,10 +181,10 @@ for number in range(options.track_count):
         ID = results[number][0]
         TrackNumber = results[number][1]
         num = num + 1
-        print(f'{num}. Обработка трек-номера: ID: {ID} TrackCode: {TrackNumber}')
+        print(f'{num} из {len(results)}. Обработка трек-номера: ID: {ID} TrackCode: {TrackNumber}')
         if TrackNumber is not None and len(TrackNumber) != 0:
             JSAnswer = tracking(TrackNumber)
-            parsing(JSAnswer, TrackNumber)
+            parsing(JSAnswer, TrackNumber, ID)
         else:
             print(f'ПРОПУСК ОБРАБОТКИ... Причина: Пустой трек-номер в строке с ID {ID}')
         time.sleep(1)
