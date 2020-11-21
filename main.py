@@ -115,18 +115,12 @@ def parsing(trackinfo: json, tracknumber: str):
         track_location = options.renamed_location
     if status_name in options.status_renamelist:
         status_name = 'Прибыл в пункт назначения'
-    if status_name == options.sfr1:
-        status_name = options.sr1
-    if status_name == options.sfr2:
-        status_name = options.sr2
-    if status_name == options.sfr3:
-        status_name = options.sr3
-    if status_name == options.sfr4:
-        status_name = options.sr4
-    if status_name == options.sfr5:
-        status_name = options.sr5
-    if status_name == options.sfr6:
-        status_name = options.sr6
+    # change delivery status
+    for status_number in range(len(options.sfr)):
+        if status_name == options.sfr[status_number]:
+            status_name = options.sr[status_number]
+            print(status_name)
+
     status = f'{status_name}.{track_location}'
     # jprint(trackinfo)
 
