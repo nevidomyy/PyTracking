@@ -106,7 +106,7 @@ def rename_status(status_name: str, track_location: str):
     return f'{status_name}.{track_location}'
 
 
-def parsing(trackinfo: json, tracknumber: str, track_id: int):
+def parsing(trackinfo: json, tracknumber: str):
     """
     :define: Receives information and processes it according to the rules.
      Writes the result of the form: "status. Location" to the Database in the Status column
@@ -128,7 +128,6 @@ def parsing(trackinfo: json, tracknumber: str, track_id: int):
     except IndexError as e:
         print(f'Произошла ошибка обновления статуса: {e} Попробуйте позже...')
         status_name = 'Ожидается отправка'
-        write_last_elem(track_id)
 
     try:
         track_location = trackinfo["data"]["checkpoints"]["0"]["location_translated"]
@@ -184,7 +183,7 @@ for number in range(options.track_count):
         print(f'{num} из {len(results)}. Обработка трек-номера: ID: {ID} TrackCode: {TrackNumber}')
         if TrackNumber is not None and len(TrackNumber) != 0:
             JSAnswer = tracking(TrackNumber)
-            parsing(JSAnswer, TrackNumber, ID)
+            parsing(JSAnswer, TrackNumber)
         else:
             print(f'ПРОПУСК ОБРАБОТКИ... Причина: Пустой трек-номер в строке с ID {ID}')
         time.sleep(1)
