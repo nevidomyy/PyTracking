@@ -5,6 +5,17 @@ from mysql.connector import connect
 import time
 import options
 
+import logging
+
+file_log = logging.FileHandler('Log.log', 'w')
+console_out = logging.StreamHandler()
+# noinspection PyArgumentList
+logging.basicConfig(format='[%(asctime)s]: %(message)s',
+                    datefmt='%m.%d.%Y %H:%M:%S',
+                    level=logging.INFO,
+                    handlers=[file_log, console_out]
+                    )
+
 
 def create_connection(host_name: str, user_name: str, user_password: str, db_name: str) -> connect:
     connection = None
@@ -17,7 +28,7 @@ def create_connection(host_name: str, user_name: str, user_password: str, db_nam
         )
         # print("Connection to MySQL DB successful")
     except Error as e:
-        print(f"The error '{e}' occurred")
+        logging.info(f"The error '{e}' occurred")
         quit(f'ERROR! Program has been stopped! There is no connection to the database.')
 
     return connection
@@ -118,7 +129,7 @@ def parsing(trackinfo: json, tracknumber: str):
     """
     recorded_status = get_recorded_status(tracknumber)
     if recorded_status in options.status_stoplist:
-        print(f'ПРОПУСК ОБРАБОТКИ... Причина: Статус из БД в стоплисте - "{recorded_status}"')
+        logging.info(f'ПРОПУСК ОБРАБОТКИ... Причина: Статус из БД в стоплисте - "{recorded_status}"')
         return
 
     try:
@@ -127,7 +138,7 @@ def parsing(trackinfo: json, tracknumber: str):
         # if Status in array JSON doesnt exist - recording temporary status
         status_name = 'Ожидается отправка'
     except IndexError as e:
-        print(f'Произошла ошибка обновления статуса: {e} Попробуйте позже...')
+        logging.info(f'Произошла ошибка обновления статуса: {e} Попробуйте позже...')
         status_name = 'Ожидается отправка'
 
     try:
@@ -144,9 +155,9 @@ def parsing(trackinfo: json, tracknumber: str):
     # writing status and location into Database, column "status"
     try:
         query.execute(f'UPDATE {options.Main_Table} SET Status = "{status}" WHERE Trackcode = "{tracknumber}"')
-        print(f'УСПЕХ! Для трек-номера {tracknumber} в базу данных записан статус: {status} ')
+        logging.info(f'УСПЕХ! Для трек-номера {tracknumber} в базу данных записан статус: {status} ')
     except Error as e:
-        print(f'ОШИБКА при записи статуса в БД: {e}.')
+        logging.info(f'ОШИБКА при записи статуса в БД: {e}.')
 
     connection.commit()
 
@@ -167,9 +178,9 @@ def write_last_elem(last_elem: int):
     try:
         query.execute(f'UPDATE {options.Support_Table} SET LastProcessedID = {last_elem}')
         connection.commit()
-        print(f'Завершено... Запись последнего обработанного элемента прошла успешно.')
+        logging.info(f'Завершено... Запись последнего обработанного элемента прошла успешно.')
     except Error as e:
-        print(f'Ошибка записи последнего обработанного элемента в БД: {e}')
+        logging.info(f'Ошибка записи последнего обработанного элемента в БД: {e}')
 
     return
 
@@ -180,15 +191,15 @@ for number in range(options.track_count):
     if number < len(results):
         ID = results[number][0]
         TrackNumber = results[number][1]
-        print(f'{number + 1} из {len(results)}. Обработка трек-номера c ID: {ID} TrackCode: {TrackNumber}')
+        logging.info(f'{number + 1} из {len(results)}. Обработка трек-номера c ID: {ID} TrackCode: {TrackNumber}')
         if TrackNumber is not None and len(TrackNumber) != 0:
             JSAnswer = tracking(TrackNumber)
             parsing(JSAnswer, TrackNumber)
         else:
-            print(f'ПРОПУСК ОБРАБОТКИ... Причина: Пустой трек-номер в строке с ID {ID}')
+            logging.info(f'ПРОПУСК ОБРАБОТКИ... Причина: Пустой трек-номер в строке с ID {ID}')
         # writing ID for last processed Track in DataBase StartIndex Table
         if number == (options.track_count - 1) or number == len(results) - 1:
-            print(f'Завершение... Запись в базу данных ID последнего обработанного элемента: ID = {ID}')
+            logging.info(f'Завершение... Запись в базу данных ID последнего обработанного элемента: ID = {ID}')
             write_last_elem(ID)
     elif len(results) == 0:
-        print('Список трек-номеров для обработки пуст. Проверьте StartIndex')
+        logging.info('Список трек-номеров для обработки пуст. Проверьте StartIndex')
