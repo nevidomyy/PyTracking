@@ -9,7 +9,7 @@ import logging
 file_log = logging.FileHandler('Log.log', 'w')
 console_out = logging.StreamHandler()
 # noinspection PyArgumentList
-logging.basicConfig(format='[%(asctime)s | %(levelname)s]: %(message)s',
+logging.basicConfig(format='[%(asctime)s]: %(message)s',
                     datefmt='%m.%d.%Y %H:%M:%S',
                     level=logging.INFO,
                     handlers=[file_log, console_out]
@@ -128,7 +128,8 @@ def parsing(trackinfo: json, tracknumber: str):
     """
     recorded_status = get_recorded_status(tracknumber)
     if recorded_status in options.status_stoplist:
-        logging.info(f'ПРОПУСК ОБРАБОТКИ... Причина: Статус из БД в Стоп-листе - "{recorded_status}"')
+        logging.info(f'ПРОПУСК ОБРАБОТКИ... Причина: Статус трек-номера'
+                     f' в базе данных с ID {ID} в Стоп-листе - "{recorded_status}"')
         return
 
     try:
@@ -137,7 +138,7 @@ def parsing(trackinfo: json, tracknumber: str):
         # if Status in array JSON doesnt exist - recording temporary status
         status_name = 'Ожидается отправка'
     except IndexError as e:
-        logging.info(f'Произошла ошибка обновления статуса: {e} Попробуйте позже...')
+        logging.info(f'Произошла ошибка обновления статуса для трек-номера {tracknumber}: {e} Попробуйте позже...')
         status_name = 'Ожидается отправка'
 
     try:
@@ -154,7 +155,7 @@ def parsing(trackinfo: json, tracknumber: str):
     # writing status and location into Database, column "status"
     try:
         query.execute(f'UPDATE {options.Main_Table} SET Status = "{status}" WHERE Trackcode = "{tracknumber}"')
-        logging.info(f'УСПЕХ! Для трек-номера {tracknumber} в базу данных записан статус: {status} ')
+        print(f'УСПЕХ! Для трек-номера {tracknumber} в базу данных записан статус: {status} ')
     except Error as e:
         logging.info(f'ОШИБКА при записи статуса в БД: {e}.')
 
@@ -190,7 +191,7 @@ for number in range(options.track_count):
     if number < len(results):
         ID = results[number][0]
         TrackNumber = results[number][1]
-        logging.info(f'{number + 1} из {len(results)}. Обработка трек-номера c ID: {ID} TrackCode: {TrackNumber}')
+        print(f'{number + 1} из {len(results)}. Обработка трек-номера c ID: {ID} TrackCode: {TrackNumber}')
         if TrackNumber is not None and len(TrackNumber) != 0:
             JSAnswer = tracking(TrackNumber)
             parsing(JSAnswer, TrackNumber)
