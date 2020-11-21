@@ -133,6 +133,8 @@ def parsing(trackinfo: json, tracknumber: str):
         track_location = trackinfo["data"]["checkpoints"]["0"]["location_translated"]
     except TypeError:
         track_location = ''
+    except IndexError:
+        track_location = ''
 
     status = rename_status(status_name, track_location)
     # jprint(trackinfo)
