@@ -190,5 +190,5 @@ for number in range(options.track_count):
         if number == (options.track_count - 1) or number == len(results) - 1:
             print(f'Завершение... Запись в базу данных ID последнего обработанного элемента: ID = {ID}')
             write_last_elem(ID)
-    elif len(results==0):
+    elif len(results == 0):
         print('Список трек-номеров для обработки пуст. Проверьте StartIndex')
