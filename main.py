@@ -118,7 +118,7 @@ def parsing(trackinfo: json, tracknumber: str):
     """
     recorded_status = get_recorded_status(tracknumber)
     if recorded_status in options.status_stoplist:
-        print(f'ПРОПУСК ОБРАБОТКИ... Причина: Статус из БД в стоплисте = {recorded_status}')
+        print(f'ПРОПУСК ОБРАБОТКИ... Причина: Статус из БД в стоплисте - "{recorded_status}"')
         return
 
     try:
