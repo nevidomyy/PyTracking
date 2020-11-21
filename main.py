@@ -9,9 +9,9 @@ import logging
 file_log = logging.FileHandler('Log.log', 'w')
 console_out = logging.StreamHandler()
 # noinspection PyArgumentList
-logging.basicConfig(format='[%(asctime)s]: %(message)s',
+logging.basicConfig(format='[%(asctime)s | %(levelname)s]: %(message)s',
                     datefmt='%m.%d.%Y %H:%M:%S',
-                    level=logging.INFO,
+                    level=logging.DEBUG,
                     handlers=[file_log, console_out]
                     )
 
@@ -128,7 +128,7 @@ def parsing(trackinfo: json, tracknumber: str):
     """
     recorded_status = get_recorded_status(tracknumber)
     if recorded_status in options.status_stoplist:
-        logging.info(f'ПРОПУСК ОБРАБОТКИ... Причина: Статус из БД в стоплисте - "{recorded_status}"')
+        logging.info(f'ПРОПУСК ОБРАБОТКИ... Причина: Статус из БД в Стоп-листе - "{recorded_status}"')
         return
 
     try:
