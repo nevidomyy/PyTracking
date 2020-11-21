@@ -85,7 +85,7 @@ def get_recorded_status(tracknumber: str):
     return query_result[0]
 
 
-def rename_status(status_name: str, track_location: str):
+def rename_status(status_name: str, track_location: str) -> str:
     """
     :define: rename status from JSON
     :param status_name: status_name from JSON
