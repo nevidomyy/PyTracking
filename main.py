@@ -4,7 +4,6 @@ from mysql.connector import Error
 from mysql.connector import connect
 import time
 import options
-
 import logging
 
 file_log = logging.FileHandler('Log.log', 'w')
