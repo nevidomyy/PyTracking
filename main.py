@@ -107,6 +107,8 @@ def rename_status(status_name: str, track_location: str) -> str:
         track_location = ''
     if track_location in options.location_renamelist:
         track_location = options.renamed_location
+    if track_location is None:
+        track_location = ''
     if status_name in options.status_renamelist:
         status_name = 'Прибыл в пункт назначения'
     # change delivery status
