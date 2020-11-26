@@ -59,16 +59,16 @@ def tracking(track: str, try_count: int) -> json:
         response = requests.get(f'https://gdeposylka.ru/api/v4/tracker/detect/{track}', headers=options.headers, timeout=30)
     except requests.Timeout:
         logging.info('Упс!! Время ожидания истекло.')
-        try_coount = try_count + 1
+        try_count = try_count + 1
         tracking(track, try_count)
     except requests.ConnectionError:
         logging.info('Упс!! Ошибка подключения к интернету.')
-        try_coount = try_count + 1
+        try_count = try_count + 1
         tracking(track, try_count)
     except requests.RequestException as e:
         logging.info('Упс!! Возникла непредвиденная ошибка!')
         logging.info(str(e))
-        try_coount = try_count + 1
+        try_count = try_count + 1
         tracking(track, try_count)
     if response.status_code == 200:
         answer = response.json()       
@@ -82,16 +82,16 @@ def tracking(track: str, try_count: int) -> json:
                                     headers=options.headers, timeout=30)
             except requests.Timeout:
                 logging.info('Упс!! Время ожидания истекло.')
-                try_coount = try_count + 1
+                try_count = try_count + 1
                 tracking(track, try_count)
             except requests.ConnectionError:
                 logging.info('Упс!! Ошибка подключения к интернету.')
-                try_coount = try_count + 1
+                try_count = try_count + 1
                 tracking(track, try_count)
             except requests.RequestException as e:
                 logging.info('Упс!! Возникла непредвиденная ошибка!')
                 logging.info(str(e))
-                try_coount = try_count + 1
+                try_count = try_count + 1
                 tracking(track, try_count)
             if response.status_code == 200:
                 answer = response.json()                
