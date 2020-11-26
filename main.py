@@ -104,7 +104,7 @@ def tracking(track: str, try_count: int) -> json:
             return 'Unknown Error... Check Track Number'
 
     elif response.status_code == 404:
-        return 'Error: 404'
+        return 'Error 404'
 
 
 def get_track_numbers():
