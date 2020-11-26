@@ -49,7 +49,7 @@ def tracking(track: str, try_count: int) -> json:
     """
     :define: delivery service and get track info
     :param track: Track number from BD
-    :param try_count: Try count 
+    :param try_count: Start value of try count, default = 0
     :return: json track info
     """
     if try_count > 10: return
