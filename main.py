@@ -162,7 +162,7 @@ def parsing(trackinfo: json, tracknumber: str):
     connection.commit()
 
 
-def write_empty_trackinfo(empty_track_id: int) -> none:
+def write_empty_trackcode(empty_track_id: int) -> none:
     """
     :define: writting status for emty track number. Status defined in options file
     :return: none
@@ -216,7 +216,7 @@ for number in range(options.track_count):
             JSAnswer = tracking(TrackNumber)
             parsing(JSAnswer, TrackNumber)
         else:
-            write_empty_trackinfo(ID)            
+            write_empty_trackcode(ID)            
         # writing ID for last processed Track in DataBase StartIndex Table
         if number == (options.track_count - 1) or number == len(results) - 1:
             logging.info(f'Завершение... Запись в базу данных ID последнего обработанного элемента: ID = {ID}')
