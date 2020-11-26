@@ -69,8 +69,7 @@ def tracking(track: str, try_count: int) -> json:
         logging.info('Упс!! Возникла непредвиденная ошибка!')
         logging.info(str(e))  
     if response.status_code == 200:
-        answer = response.json()
-        try_count = 0
+        answer = response.json()       
         # if result of detecting delivery service is successful
         if answer['result'] == 'success':
             slug = answer['data'][0]['courier']['slug']           
@@ -91,8 +90,7 @@ def tracking(track: str, try_count: int) -> json:
                 logging.info('Упс!! Возникла непредвиденная ошибка!')
                 logging.info(str(e))
             if response.status_code == 200:
-                answer = response.json()
-                try_count = 0
+                answer = response.json()                
                 return answer
         else:
             return 'Unknown Error... Check Track Number'
