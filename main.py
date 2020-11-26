@@ -52,11 +52,14 @@ def tracking(track: str, try_count: int) -> json:
     :param try_count: Start value of try count, default = 0
     :return: json track info
     """
-    if try_count > options.attempts: return
-    if try_count > 0: logging.info(f'Попытка {try_count}...')
+    if try_count > options.attempts:
+        return
+    if try_count > 0:
+        logging.info(f'Попытка {try_count}...')
     time.sleep(2)
     try:
-        response = requests.get(f'https://gdeposylka.ru/api/v4/tracker/detect/{track}', headers=options.headers, timeout=options.timeout)
+        response = requests.get(f'https://gdeposylka.ru/api/v4/tracker/detect/{track}',
+                                headers=options.headers, timeout=options.timeout)
     except requests.Timeout:
         logging.info('Упс!! Время ожидания истекло.')
         try_count = try_count + 1
@@ -71,7 +74,7 @@ def tracking(track: str, try_count: int) -> json:
         try_count = try_count + 1
         tracking(track, try_count)
     if response.status_code == 200:
-        answer = response.json()       
+        answer = response.json()
         # if result of detecting delivery service is successful
         if answer['result'] == 'success':
             slug = answer['data'][0]['courier']['slug']           
@@ -79,7 +82,7 @@ def tracking(track: str, try_count: int) -> json:
             time.sleep(2)
             try:
                 response = requests.get(f'https://gdeposylka.ru/api/v4/tracker/{slug}/{track}',
-                                    headers=options.headers, timeout=options.timeout)
+                                        headers=options.headers, timeout=options.timeout)
             except requests.Timeout:
                 logging.info('Упс!! Время ожидания истекло.')
                 try_count = try_count + 1
@@ -196,7 +199,7 @@ def parsing(trackinfo: json, tracknumber: str):
     connection.commit()
 
 
-def write_empty_trackcode(empty_track_id: int) -> none:
+def write_empty_trackcode(empty_track_id: int) -> None:
     """
     :define: writting default status for empty track number. Status is defined in options file
     :return: none
