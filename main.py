@@ -70,6 +70,7 @@ def tracking(track: str, try_count: int) -> json:
         logging.info(str(e))  
     if response.status_code == 200:
         answer = response.json()
+        try_count = 0
         # if result of detecting delivery service is successful
         if answer['result'] == 'success':
             slug = answer['data'][0]['courier']['slug']           
@@ -91,6 +92,7 @@ def tracking(track: str, try_count: int) -> json:
                 logging.info(str(e))
             if response.status_code == 200:
                 answer = response.json()
+                try_count = 0
                 return answer
         else:
             return 'Unknown Error... Check Track Number'
