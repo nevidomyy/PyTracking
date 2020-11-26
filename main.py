@@ -105,6 +105,8 @@ def tracking(track: str, try_count: int) -> json:
                 if response.status_code == 200:
                     JSAnswer = response.json()
                     return JSAnswer
+                elif response.status_code == 404:
+                    return 'Error 404'
         else:
             return 'Unknown Error... Check Track Number'
     elif response.status_code == 404:
