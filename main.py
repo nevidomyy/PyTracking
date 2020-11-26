@@ -5,7 +5,6 @@ from mysql.connector import connect
 import time
 import options
 import logging
-from timeout import timeout
 
 
 file_log = logging.FileHandler('Log.log', 'w')
@@ -46,7 +45,6 @@ def jprint(obj: json):
     print(text)
 
 
-@timeout(60, os.strerror(errno.ETIMEDOUT))
 def tracking(track: str) -> json:
     """
     :define: delivery service and get track info
