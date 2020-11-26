@@ -162,6 +162,26 @@ def parsing(trackinfo: json, tracknumber: str):
     connection.commit()
 
 
+def write_empty_trackinfo(empty_track_id: int) -> none:
+    """
+    :define: writting status for emty track number. Status defined in options file
+    :return: none
+    :param: id: id for string where finded empty track number
+    """
+    connection = create_connection(options.My_Host, options.My_User, options.My_Password, options.My_DB_name)
+    query = connection.cursor()
+    # writing status and location into Database, column "status"
+    status = options.emptystatus
+    logging.info(f'ВНИМАНИЕ... Причина: Пустой трек-номер в строке с ID {ID}')
+    try:
+        query.execute(f'UPDATE {options.Main_Table} SET Status = "{status}" WHERE ID = "{empty_track_id}"')
+        print(f'Успех! Для пустого трек-номера в строке с {ID} в базу данных записан статус: {status} ')
+    except Error as e:
+        logging.info(f'ОШИБКА при записи статуса в БД: {e}.')
+
+    connection.commit()
+        
+
 def write_last_elem(last_elem: int):
     """
     :define: writing number of last processed ID in DataBase, Table - StartIndex
@@ -196,7 +216,7 @@ for number in range(options.track_count):
             JSAnswer = tracking(TrackNumber)
             parsing(JSAnswer, TrackNumber)
         else:
-            logging.info(f'ПРОПУСК ОБРАБОТКИ... Причина: Пустой трек-номер в строке с ID {ID}')
+            write_empty_trackinfo(ID)            
         # writing ID for last processed Track in DataBase StartIndex Table
         if number == (options.track_count - 1) or number == len(results) - 1:
             logging.info(f'Завершение... Запись в базу данных ID последнего обработанного элемента: ID = {ID}')
