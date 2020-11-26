@@ -15,6 +15,7 @@ logging.basicConfig(format='[%(asctime)s]: %(message)s',
                     level=logging.INFO,
                     handlers=[file_log, console_out]
                     )
+# logging.info('text')
 
 
 def create_connection(host_name: str, user_name: str, user_password: str, db_name: str) -> connect:
@@ -28,7 +29,7 @@ def create_connection(host_name: str, user_name: str, user_password: str, db_nam
         )
         # print("Connection to MySQL DB successful")
     except Error as e:
-        logging.info(f"The error '{e}' occurred")
+        print(f"The error '{e}' occurred")
         quit(f'ERROR! Program has been stopped! There is no connection to the database.')
 
     return connection
@@ -56,22 +57,22 @@ def tracking(track: str, try_count: int) -> json:
     if try_count > options.attempts:
         return
     if try_count > 0:
-        logging.info(f'Попытка {try_count}...')
+        print(f'Попытка {try_count}...')
     time.sleep(2)
     try:
         response = requests.get(f'https://gdeposylka.ru/api/v4/tracker/detect/{track}',
                                 headers=options.headers, timeout=options.timeout)
     except requests.Timeout:
-        logging.info('Упс!! Время ожидания истекло.')
+        print('Упс!! Время ожидания истекло.')
         try_count = try_count + 1
         tracking(track, try_count)
     except requests.ConnectionError:
-        logging.info('Упс!! Ошибка подключения к интернету.')
+        print('Упс!! Ошибка подключения к интернету.')
         try_count = try_count + 1
         tracking(track, try_count)
     except requests.RequestException as e:
-        logging.info('Упс!! Возникла непредвиденная ошибка!')
-        logging.info(str(e))
+        print('Упс!! Возникла непредвиденная ошибка!')
+        print(str(e))
         try_count = try_count + 1
         tracking(track, try_count)
     if response.status_code == 200:
@@ -85,16 +86,16 @@ def tracking(track: str, try_count: int) -> json:
                 response = requests.get(f'https://gdeposylka.ru/api/v4/tracker/{slug}/{track}',
                                         headers=options.headers, timeout=options.timeout)
             except requests.Timeout:
-                logging.info('Упс!! Время ожидания истекло.')
+                print('Упс!! Время ожидания истекло.')
                 try_count = try_count + 1
                 tracking(track, try_count)
             except requests.ConnectionError:
-                logging.info('Упс!! Ошибка подключения к интернету.')
+                print('Упс!! Ошибка подключения к интернету.')
                 try_count = try_count + 1
                 tracking(track, try_count)
             except requests.RequestException as e:
-                logging.info('Упс!! Возникла непредвиденная ошибка!')
-                logging.info(str(e))
+                print('Упс!! Возникла непредвиденная ошибка!')
+                print(str(e))
                 try_count = try_count + 1
                 tracking(track, try_count)
             if response.status_code == 200:
@@ -166,8 +167,8 @@ def parsing(trackinfo: json, tracknumber: str):
     """
     recorded_status = get_recorded_status(tracknumber)
     if recorded_status in options.status_stoplist:
-        logging.info(f'ПРОПУСК ОБРАБОТКИ... Причина: Статус трек-номера'
-                     f' в базе данных с ID {ID} в Стоп-листе - "{recorded_status}"')
+        print(f'ПРОПУСК ОБРАБОТКИ... Причина: Статус трек-номера'
+              f' в базе данных с ID {ID} в Стоп-листе - "{recorded_status}"')
         return
 
     try:
@@ -176,7 +177,7 @@ def parsing(trackinfo: json, tracknumber: str):
         # if Status in array JSON doesnt exist - recording temporary status
         status_name = 'Ожидается отправка'
     except IndexError as e:
-        logging.info(f'Произошла ошибка обновления статуса для трек-номера {tracknumber}: {e} Попробуйте позже...')
+        print(f'Произошла ошибка обновления статуса для трек-номера {tracknumber}: {e} Попробуйте позже...')
         status_name = 'Ожидается отправка'
 
     try:
@@ -195,7 +196,7 @@ def parsing(trackinfo: json, tracknumber: str):
         query.execute(f'UPDATE {options.Main_Table} SET Status = "{status}" WHERE Trackcode = "{tracknumber}"')
         print(f'УСПЕХ! Для трек-номера {tracknumber} в базу данных записан статус: {status} ')
     except Error as e:
-        logging.info(f'ОШИБКА при записи статуса в БД: {e}.')
+        print(f'ОШИБКА при записи статуса в БД: {e}.')
 
     connection.commit()
 
@@ -209,12 +210,12 @@ def write_empty_trackcode(empty_track_id: int) -> None:
     connection = create_connection(options.My_Host, options.My_User, options.My_Password, options.My_DB_name)
     query = connection.cursor()
     status = options.emptystatus
-    logging.info(f'ВНИМАНИЕ... Причина: Пустой трек-номер в строке с ID {ID}')
+    print(f'ВНИМАНИЕ... Причина: Пустой трек-номер в строке с ID {ID}')
     try:
         query.execute(f'UPDATE {options.Main_Table} SET Status = "{status}" WHERE ID = "{empty_track_id}"')
         print(f'Для пустого трек-номера в строке с {ID} в базу данных записан статус: {status}')
     except Error as e:
-        logging.info(f'ОШИБКА при записи статуса в БД: {e}.')
+        print(f'ОШИБКА при записи статуса в БД: {e}.')
 
     connection.commit()
         
@@ -235,9 +236,9 @@ def write_last_elem(last_elem: int):
     try:
         query.execute(f'UPDATE {options.Support_Table} SET LastProcessedID = {last_elem}')
         connection.commit()
-        logging.info(f'Завершено... Запись последнего обработанного элемента прошла успешно.')
+        print(f'Завершено... Запись последнего обработанного элемента прошла успешно.')
     except Error as e:
-        logging.info(f'Ошибка записи последнего обработанного элемента в БД: {e}')
+        print(f'Ошибка записи последнего обработанного элемента в БД: {e}')
 
     return
 
@@ -256,7 +257,7 @@ for number in range(options.track_count):
             write_empty_trackcode(ID)            
         # writing ID for last processed Track in DataBase StartIndex Table
         if number == (options.track_count - 1) or number == len(results) - 1:
-            logging.info(f'Завершение... Запись в базу данных ID последнего обработанного элемента: ID = {ID}')
+            print(f'Завершение... Запись в базу данных ID последнего обработанного элемента: ID = {ID}')
             write_last_elem(ID)
     elif len(results) == 0:
-        logging.info('Список трек-номеров для обработки пуст. Проверьте StartIndex')
+        print('Список трек-номеров для обработки пуст. Проверьте StartIndex')
