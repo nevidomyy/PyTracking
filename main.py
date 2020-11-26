@@ -55,7 +55,9 @@ def tracking(track: str) -> json:
     try:
         response = requests.get(f'https://gdeposylka.ru/api/v4/tracker/detect/{track}', headers=options.headers, timeout=30)
     except requests.Timeout:
-        logging.info("OOPS!! Timeout Error")    
+        logging.info("Упс!! Время ожидания истекло")
+    except requests.ConnectionError:
+        logging.info("Упс!! Ошибка подключения к интернету.")
     if response.status_code == 200:
         answer = response.json()
         # if result of detecting delivery service is successful
@@ -67,7 +69,9 @@ def tracking(track: str) -> json:
                 response = requests.get(f'https://gdeposylka.ru/api/v4/tracker/{slug}/{track}',
                                     headers=options.headers, timeout=30)
             except requests.Timeout:
-                logging.info("OOPS!! Timeout Error") 
+                logging.info("Упс!! Время ожидания истекло")
+            except requests.ConnectionError:
+                logging.info("Упс!! Ошибка подключения к интернету.")
             if response.status_code == 200:
                 answer = response.json()
                 return answer
