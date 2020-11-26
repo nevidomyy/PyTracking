@@ -77,8 +77,9 @@ def tracking(track: str, try_count: int) -> json:
         answer = response.json()
         # if result of detecting delivery service is successful
         if answer['result'] == 'success':
-            slug = answer['data'][0]['courier']['slug']           
-            # getting info for track            
+            slug = answer['data'][0]['courier']['slug']
+            print(slug)
+            # getting info for track
             time.sleep(2)
             try:
                 response = requests.get(f'https://gdeposylka.ru/api/v4/tracker/{slug}/{track}',
@@ -97,7 +98,7 @@ def tracking(track: str, try_count: int) -> json:
                 try_count = try_count + 1
                 tracking(track, try_count)
             if response.status_code == 200:
-                answer = response.json()                
+                answer = response.json()
                 return answer
         else:
             return 'Unknown Error... Check Track Number'
