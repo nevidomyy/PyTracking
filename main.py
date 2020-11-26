@@ -67,7 +67,9 @@ def tracking(track: str, try_count: int) -> json:
         tracking(track, try_count)
     except requests.RequestException as e:
         logging.info('Упс!! Возникла непредвиденная ошибка!')
-        logging.info(str(e))  
+        logging.info(str(e))
+        try_coount = try_count + 1
+        tracking(track, try_count)
     if response.status_code == 200:
         answer = response.json()       
         # if result of detecting delivery service is successful
@@ -89,6 +91,8 @@ def tracking(track: str, try_count: int) -> json:
             except requests.RequestException as e:
                 logging.info('Упс!! Возникла непредвиденная ошибка!')
                 logging.info(str(e))
+                try_coount = try_count + 1
+                tracking(track, try_count)
             if response.status_code == 200:
                 answer = response.json()                
                 return answer
