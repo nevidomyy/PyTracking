@@ -5,7 +5,7 @@ from mysql.connector import connect
 import time
 import options
 import logging
-
+JSAnswer = ''
 
 file_log = logging.FileHandler('Log.log', 'w')
 console_out = logging.StreamHandler()
@@ -53,10 +53,13 @@ def tracking(track: str, try_count: int) -> json:
     :param try_count: Start value of try count, default = 0
     :return: json track info
     """
-    response = None
+    global JSAnswer
+    response = requests.get
+    response.status_code = 0
     if try_count > options.attempts:
         return
     if try_count > 0:
+        time.sleep(5)
         print(f'Попытка {try_count}...')
     time.sleep(2)
     try:
@@ -98,9 +101,10 @@ def tracking(track: str, try_count: int) -> json:
                 print(str(e))
                 try_count = try_count + 1
                 tracking(track, try_count)
-            if response.status_code == 200:
-                answer = response.json()
-                return answer
+            else:
+                if response.status_code == 200:
+                    JSAnswer = response.json()
+                    return JSAnswer
         else:
             return 'Unknown Error... Check Track Number'
 
@@ -251,7 +255,7 @@ for number in range(options.track_count):
         TrackNumber = results[number][1]
         print(f'{number + 1} из {len(results)}. Обработка трек-номера c ID: {ID} TrackCode: {TrackNumber}')
         if TrackNumber is not None and len(TrackNumber) != 0:
-            JSAnswer = tracking(TrackNumber, 0)
+            tracking(TrackNumber, 0)
             parsing(JSAnswer, TrackNumber)
         else:
             write_empty_trackcode(ID)            
