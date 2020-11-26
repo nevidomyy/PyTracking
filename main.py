@@ -175,7 +175,7 @@ def write_empty_trackinfo(empty_track_id: int) -> none:
     logging.info(f'ВНИМАНИЕ... Причина: Пустой трек-номер в строке с ID {ID}')
     try:
         query.execute(f'UPDATE {options.Main_Table} SET Status = "{status}" WHERE ID = "{empty_track_id}"')
-        print(f'Успех! Для пустого трек-номера в строке с {ID} в базу данных записан статус: {status} ')
+        print(f'Для пустого трек-номера в строке с {ID} в базу данных записан статус: {status} ')
     except Error as e:
         logging.info(f'ОШИБКА при записи статуса в БД: {e}.')
 
