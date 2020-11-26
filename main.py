@@ -166,7 +166,7 @@ def write_empty_trackinfo(empty_track_id: int) -> none:
     """
     :define: writting status for emty track number. Status defined in options file
     :return: none
-    :param: id: id for string where finded empty track number
+    :param: empty_track_id: id for string where finded empty track number
     """
     connection = create_connection(options.My_Host, options.My_User, options.My_Password, options.My_DB_name)
     query = connection.cursor()
