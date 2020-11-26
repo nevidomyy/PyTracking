@@ -164,13 +164,12 @@ def parsing(trackinfo: json, tracknumber: str):
 
 def write_empty_trackcode(empty_track_id: int) -> none:
     """
-    :define: writting status for emty track number. Status defined in options file
+    :define: writting default status for empty track number. Status is defined in options file
     :return: none
-    :param: empty_track_id: id for string where finded empty track number
+    :param: empty_track_id: this id for string where finded empty track number
     """
     connection = create_connection(options.My_Host, options.My_User, options.My_Password, options.My_DB_name)
     query = connection.cursor()
-    # writing status and location into Database, column "status"
     status = options.emptystatus
     logging.info(f'ВНИМАНИЕ... Причина: Пустой трек-номер в строке с ID {ID}')
     try:
