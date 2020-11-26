@@ -52,6 +52,7 @@ def tracking(track: str, try_count: int) -> json:
     :param try_count: Start value of try count, default = 0
     :return: json track info
     """
+    response = None
     if try_count > options.attempts:
         return
     if try_count > 0:
@@ -78,7 +79,6 @@ def tracking(track: str, try_count: int) -> json:
         # if result of detecting delivery service is successful
         if answer['result'] == 'success':
             slug = answer['data'][0]['courier']['slug']
-            print(slug)
             # getting info for track
             time.sleep(2)
             try:
