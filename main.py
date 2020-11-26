@@ -52,16 +52,22 @@ def tracking(track: str) -> json:
     :return: json track info
     """
     time.sleep(2)
-    response = requests.get(f'https://gdeposylka.ru/api/v4/tracker/detect/{track}', headers=options.headers, timeout=30)
+    try:
+        response = requests.get(f'https://gdeposylka.ru/api/v4/tracker/detect/{track}', headers=options.headers, timeout=30)
+    except requests.Timeout:
+        logging.info("OOPS!! Timeout Error")    
     if response.status_code == 200:
         answer = response.json()
         # if result of detecting delivery service is successful
         if answer['result'] == 'success':
-            slug = answer['data'][0]['courier']['slug']
-            # getting info for track
+            slug = answer['data'][0]['courier']['slug']           
+            # getting info for track            
             time.sleep(2)
-            response = requests.get(f'https://gdeposylka.ru/api/v4/tracker/{slug}/{track}',
+            try:
+                response = requests.get(f'https://gdeposylka.ru/api/v4/tracker/{slug}/{track}',
                                     headers=options.headers, timeout=30)
+            except requests.Timeout:
+                logging.info("OOPS!! Timeout Error") 
             if response.status_code == 200:
                 answer = response.json()
                 return answer
