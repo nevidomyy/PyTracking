@@ -52,11 +52,11 @@ def tracking(track: str, try_count: int) -> json:
     :param try_count: Start value of try count, default = 0
     :return: json track info
     """
-    if try_count > 10: return
+    if try_count > options.attempts: return
     if try_count > 0: logging.info(f'Попытка {try_count}...')
     time.sleep(2)
     try:
-        response = requests.get(f'https://gdeposylka.ru/api/v4/tracker/detect/{track}', headers=options.headers, timeout=30)
+        response = requests.get(f'https://gdeposylka.ru/api/v4/tracker/detect/{track}', headers=options.headers, timeout=options.timeout)
     except requests.Timeout:
         logging.info('Упс!! Время ожидания истекло.')
         try_count = try_count + 1
@@ -79,7 +79,7 @@ def tracking(track: str, try_count: int) -> json:
             time.sleep(2)
             try:
                 response = requests.get(f'https://gdeposylka.ru/api/v4/tracker/{slug}/{track}',
-                                    headers=options.headers, timeout=30)
+                                    headers=options.headers, timeout=options.timeout)
             except requests.Timeout:
                 logging.info('Упс!! Время ожидания истекло.')
                 try_count = try_count + 1
