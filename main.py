@@ -152,7 +152,7 @@ def rename_status(status_name: str, track_location: str) -> str:
     if track_location is None:
         track_location = ''
     if status_name in options.status_renamelist:
-        status_name = 'Прибыл в пункт назначения'
+        status_name = options.status_renamelist_renamed
     # change delivery status
     for status_number in range(len(options.sfr)):
         if status_name == options.sfr[status_number]:
@@ -180,10 +180,10 @@ def parsing(trackinfo: json, tracknumber: str):
         status_name = trackinfo["data"]["checkpoints"][0]["status_name"]
     except TypeError:
         # if Status in array JSON doesnt exist - recording temporary status
-        status_name = 'Ожидается отправка'
+        status_name = options.status_waiting
     except IndexError as e:
         print(f'Произошла ошибка обновления статуса для трек-номера {tracknumber}: {e} Попробуйте позже...')
-        status_name = 'Ожидается отправка'
+        status_name = options.status_waiting
 
     try:
         track_location = trackinfo["data"]["checkpoints"]["0"]["location_translated"]
