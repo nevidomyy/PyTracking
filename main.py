@@ -158,7 +158,7 @@ def rename_status(status_name: str, track_location: str) -> str:
         if status_name == options.sfr[status_number]:
             status_name = options.sr[status_number]
 
-    return f'{status_name}.{track_location}'
+    return f'{status_name}. {track_location}'
 
 
 def parsing(trackinfo: json, tracknumber: str):
@@ -186,14 +186,13 @@ def parsing(trackinfo: json, tracknumber: str):
         status_name = options.status_waiting
 
     try:
-        track_location = trackinfo["data"]["checkpoints"]["0"]["location_translated"]
+        track_location = trackinfo["data"]["checkpoints"][0]["location_translated"]
     except TypeError:
         track_location = ''
     except IndexError:
         track_location = ''
     status = rename_status(status_name, track_location)
     # jprint(trackinfo)
-
     connection = create_connection(options.My_Host, options.My_User, options.My_Password, options.My_DB_name)
     query = connection.cursor()
     # writing status and location into Database, column "status"
