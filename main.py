@@ -187,6 +187,8 @@ def parsing(trackinfo: json, tracknumber: str):
 
     try:
         track_location = trackinfo["data"]["checkpoints"][0]["location_translated"]
+        if track_location == "":
+            track_location = trackinfo["data"]["checkpoints"][0]["courier"]["name"]
     except TypeError:
         track_location = ''
     except IndexError:
