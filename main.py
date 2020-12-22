@@ -251,6 +251,19 @@ def write_last_elem(last_elem: int):
 
 
 results = get_track_numbers()
+# initial run. Doesnt write info to database
+# ToDo: Первый круг в холостую, не пишем данные в базу.
+for number in range(options.track_count):
+    if number < len(results):
+        ID = results[number][0]
+        TrackNumber = results[number][1]
+        print(f'{number + 1} из {len(results)}. Холостая обработка трек-номера c ID: {ID} TrackCode: {TrackNumber}')
+        if TrackNumber is not None and len(TrackNumber) != 0:
+            tracking(TrackNumber, 0)
+        if number == (options.track_count - 1) or number == len(results) - 1:
+            print(f'Завершение холостой обработки. Конец таблицы, последний ID = {ID}')
+        elif len(results) == 0:
+            print('Список трек-номеров для обработки пуст. Проверьте StartIndex')
 # in range(count) count - the number of processed tracks per run
 for number in range(options.track_count):
     if number < len(results):
