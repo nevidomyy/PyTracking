@@ -262,8 +262,8 @@ for number in range(options.track_count):
             tracking(TrackNumber, 0)
         if number == (options.track_count - 1) or number == len(results) - 1:
             print(f'Завершение холостой обработки. Последний обработанный ID = {ID}')
-        elif len(results) == 0:
-            print('Список трек-номеров для обработки пуст. Проверьте StartIndex')
+    elif len(results) == 0:
+        print('Список трек-номеров для обработки пуст. Проверьте StartIndex')
 # in range(count) count - the number of processed tracks per run
 for number in range(options.track_count):
     if number < len(results):
