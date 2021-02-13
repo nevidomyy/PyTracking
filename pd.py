@@ -85,6 +85,8 @@ def protect_day(tracknumber: str, track_id: int):
         except Error as e:
             print(f'ОШИБКА при записи количества дней защиты покупателей: {e} по {tracknumber}.')
         connection.commit()
+    else:
+        print(f'Пустая дата в строке с ID = {track_id}')
 
 
 results = get_track_numbers()
