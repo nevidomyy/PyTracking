@@ -86,7 +86,7 @@ def protect_day(tracknumber: str, track_id: int):
             print(f'ОШИБКА при записи количества дней защиты покупателей: {e} по {tracknumber}.')
         connection.commit()
     else:
-        print(f'Пустая дата в строке с ID = {track_id}')
+        print(f'ОШИБКА: Пустая дата в строке с ID = {track_id}')
 
 
 results = get_track_numbers()
