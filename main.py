@@ -225,8 +225,8 @@ def protect_day(tracknumber: str, track_id:int):
     query.execute(f'SELECT date FROM {options.Main_Table} WHERE Trackcode = "{tracknumber}" AND id = "{track_id}"')
     query_result = query.fetchone()
     temp = query_result
-    if temp is not None and len(temp) != 0:
-        order_date = temp[0]
+    order_date = temp[0]
+    if order_date is not None and len(temp) != 0:
         delta_days = order_date-cd
         protect_days = delta_days.days + options.pd
         if protect_days < 0:
