@@ -40,7 +40,7 @@ def get_track_numbers():
     """
     connection = create_connection(options.My_Host, options.My_User, options.My_Password, options.My_DB_name)
     query = connection.cursor()
-    query.execute(f'SELECT ID, Trackcode FROM {options.Main_Table}')
+    query.execute(f'SELECT ID, Trackcode FROM {options.Main_Table} WHERE ID > {options.start_track_id}')
     query_result = query.fetchall()
     return query_result
 
@@ -72,13 +72,13 @@ def protect_day(tracknumber: str, track_id: int):
     query.execute(f'SELECT date FROM {options.Main_Table} WHERE Trackcode = "{tracknumber}" AND id = "{track_id}" ')
     query_result = query.fetchone()
     temp = query_result
-    order_date = temp[0]
-    delta_days = order_date-cd
-    protect_days = delta_days.days + options.pd
-    if protect_days < 0:
-        protect_days = 0
-    # Write proctect_days in DB
-    if TrackNumber is not None and len(TrackNumber) != 0:
+    if temp is not None and len(temp) != 0:
+        order_date = temp[0]
+        delta_days = order_date - cd
+        protect_days = delta_days.days + options.pd
+        if protect_days < 0:
+            protect_days = 0
+        # Write proctect_days in DB
         try:
             query.execute(f'UPDATE {options.Main_Table} SET Protect_days = "{protect_days}"'
                           f' WHERE Trackcode = "{tracknumber}" AND id = "{track_id}"')
@@ -88,21 +88,14 @@ def protect_day(tracknumber: str, track_id: int):
 
 
 results = get_track_numbers()
-
 for number in range(options.pd_track_count):
-    for number in range(len(results)):
-        if number < len(results):
-            ID = results[number][0]
-            TrackNumber = results[number][1]
-            print(f'{number + 1} из {len(results)}. Обработка трек-номера c ID: {ID} TrackCode: {TrackNumber}')
-            if TrackNumber is not None and len(TrackNumber) != 0:
-                protect_day(TrackNumber, ID)
+    if number < len(results):
+        ID = results[number][0]
+        TrackNumber = results[number][1]
+        print(f'{number + 1} из {len(results)}. Обработка трек-номера c ID: {ID} TrackCode: {TrackNumber}')
+        if TrackNumber is not None and len(TrackNumber) != 0:
+            protect_day(TrackNumber, ID)
         if number == (options.pd_track_count - 1) or number == len(results) - 1:
-            print(f'Завершение... Запись в базу данных ID последнего обработанного элемента: ID = {ID}')
-
+            print(f'Завершение... Последний обработанный элемент: ID = {ID}')
         elif len(results) == 0:
             print('Список трек-номеров для обработки пуст. Проверьте StartIndex')
-
-
-
-
