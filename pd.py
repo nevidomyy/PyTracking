@@ -99,5 +99,6 @@ for number in range(options.pd_track_count):
             protect_day(TrackNumber, ID)
         if number == (options.pd_track_count - 1) or number == len(results) - 1:
             print(f'Завершение... Последний обработанный элемент: ID = {ID}')
+            logging.info(f'Последний обработанный элемент: ID = {ID}')
         elif len(results) == 0:
             print('Список трек-номеров для обработки пуст. Проверьте StartIndex')

@@ -209,7 +209,7 @@ def parsing(trackinfo: json, tracknumber: str):
     connection.commit()
 
 
-def protect_day(tracknumber: str, track_id:int):
+def protect_day(tracknumber: str, track_id: int):
     """
     :define: Receives information and processes it according to the rules.
     Writes the result of the form: "status. Location" to the Database in the Status column
@@ -314,5 +314,6 @@ for number in range(options.track_count):
         if number == (options.track_count - 1) or number == len(results) - 1:
             print(f'Завершение... Запись в базу данных ID последнего обработанного элемента: ID = {ID}')
             write_last_elem(ID)
+            logging.info(f'Последний обработанный элемент: ID = {ID}')
     elif len(results) == 0:
         print('Список трек-номеров для обработки пуст. Проверьте StartIndex')
