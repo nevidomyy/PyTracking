@@ -228,6 +228,8 @@ def protect_day(tracknumber: str):
     order_date = temp[0]
     delta_days = order_date-cd
     protect_days = delta_days.days + options.pd
+    if protect_days < 0:
+        protect_days = 0
     # Write proctect_days in DB
     if TrackNumber is not None and len(TrackNumber) != 0:
         try:
