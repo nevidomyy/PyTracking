@@ -3,6 +3,7 @@ import json
 from mysql.connector import Error
 from mysql.connector import connect
 import time
+import datetime
 import options
 import logging
 JSAnswer = ''
@@ -208,6 +209,35 @@ def parsing(trackinfo: json, tracknumber: str):
     connection.commit()
 
 
+def protect_day(tracknumber: str):
+    """
+    :define: Receives information and processes it according to the rules.
+    Writes the result of the form: "status. Location" to the Database in the Status column
+    :param: tracknumber: current Track Number
+    :param: id: current ID from database
+    """
+    # Get current date
+    cd = datetime.datetime.now()
+
+    # Get current track order date
+    connection = create_connection(options.My_Host, options.My_User, options.My_Password, options.My_DB_name)
+    query = connection.cursor()
+    query.execute(f'SELECT date FROM {options.Main_Table} WHERE Trackcode = "{tracknumber}"')
+    query_result = query.fetchone()
+    temp = query_result
+    order_date = temp[0]
+    delta_days = order_date-cd
+    protect_days = delta_days.days + options.pd
+    # Write proctect_days in DB
+    if TrackNumber is not None and len(TrackNumber) != 0:
+        try:
+            query.execute(f'UPDATE {options.Main_Table} SET Protect_days = "{protect_days}"'
+                          f' WHERE Trackcode = "{tracknumber}"')
+        except Error as e:
+            print(f'ОШИБКА при записи количества дней защиты покупателей: {e} по {tracknumber}.')
+    connection.commit()
+
+
 def write_empty_trackcode(empty_track_id: int) -> None:
     """
     :define: writting default status for empty track number. Status is defined in options file
@@ -273,6 +303,7 @@ for number in range(options.track_count):
         if TrackNumber is not None and len(TrackNumber) != 0:
             tracking(TrackNumber, 0)
             parsing(JSAnswer, TrackNumber)
+            protect_day(TrackNumber)
         else:
             write_empty_trackcode(ID)            
         # writing ID for last processed Track in DataBase StartIndex Table
