@@ -237,7 +237,9 @@ def protect_day(tracknumber: str, track_id:int):
                           f' WHERE Trackcode = "{tracknumber}" AND id = "{track_id}"')
         except Error as e:
             print(f'ОШИБКА при записи количества дней защиты покупателей: {e} по {tracknumber}.')
-    connection.commit()
+        connection.commit()
+    else:
+        print(f'Пустая дата в строке с ID = {track_id}')
 
 
 def write_empty_trackcode(empty_track_id: int) -> None:
