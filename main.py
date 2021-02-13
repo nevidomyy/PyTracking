@@ -225,17 +225,18 @@ def protect_day(tracknumber: str, track_id:int):
     query.execute(f'SELECT date FROM {options.Main_Table} WHERE Trackcode = "{tracknumber}" AND id = "{track_id}"')
     query_result = query.fetchone()
     temp = query_result
-    order_date = temp[0]
-    delta_days = order_date-cd
-    protect_days = delta_days.days + options.pd
-    if protect_days < 0:
-        protect_days = 0
-    # Write proctect_days in DB
-    try:
-        query.execute(f'UPDATE {options.Main_Table} SET Protect_days = "{protect_days}"'
-                      f' WHERE Trackcode = "{tracknumber}" AND id = "{track_id}"')
-    except Error as e:
-        print(f'ОШИБКА при записи количества дней защиты покупателей: {e} по {tracknumber}.')
+    if temp is not None and len(temp) != 0:
+        order_date = temp[0]
+        delta_days = order_date-cd
+        protect_days = delta_days.days + options.pd
+        if protect_days < 0:
+            protect_days = 0
+        # Write proctect_days in DB
+        try:
+            query.execute(f'UPDATE {options.Main_Table} SET Protect_days = "{protect_days}"'
+                          f' WHERE Trackcode = "{tracknumber}" AND id = "{track_id}"')
+        except Error as e:
+            print(f'ОШИБКА при записи количества дней защиты покупателей: {e} по {tracknumber}.')
     connection.commit()
 
 

@@ -89,14 +89,20 @@ def protect_day(tracknumber: str, track_id: int):
 
 results = get_track_numbers()
 
+for number in range(options.pd_track_count):
+    for number in range(len(results)):
+        if number < len(results):
+            ID = results[number][0]
+            TrackNumber = results[number][1]
+            print(f'{number + 1} из {len(results)}. Обработка трек-номера c ID: {ID} TrackCode: {TrackNumber}')
+            if TrackNumber is not None and len(TrackNumber) != 0:
+                protect_day(TrackNumber, ID)
+        if number == (options.pd_track_count - 1) or number == len(results) - 1:
+            print(f'Завершение... Запись в базу данных ID последнего обработанного элемента: ID = {ID}')
 
-for number in range(len(results)):
-    if number < len(results):
-        ID = results[number][0]
-        TrackNumber = results[number][1]
-        print(f'{number + 1} из {len(results)}. Обработка трек-номера c ID: {ID} TrackCode: {TrackNumber}')
-        if TrackNumber is not None and len(TrackNumber) != 0:
-            protect_day(TrackNumber, ID)
+        elif len(results) == 0:
+            print('Список трек-номеров для обработки пуст. Проверьте StartIndex')
 
-    elif len(results) == 0:
-        print('Список трек-номеров для обработки пуст. Проверьте StartIndex')
+
+
+
