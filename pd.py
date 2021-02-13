@@ -56,7 +56,7 @@ def jprint(obj: json):
     print(text)
 
 
-def protect_day(tracknumber: str):
+def protect_day(tracknumber: str, track_id: int):
     """
     :define: Receives information and processes it according to the rules.
     Writes the result of the form: "status. Location" to the Database in the Status column
@@ -69,7 +69,7 @@ def protect_day(tracknumber: str):
     # Get current track order date
     connection = create_connection(options.My_Host, options.My_User, options.My_Password, options.My_DB_name)
     query = connection.cursor()
-    query.execute(f'SELECT date FROM {options.Main_Table} WHERE Trackcode = "{tracknumber}"')
+    query.execute(f'SELECT date FROM {options.Main_Table} WHERE Trackcode = "{tracknumber}" AND id = "{track_id}" ')
     query_result = query.fetchone()
     temp = query_result
     order_date = temp[0]
@@ -81,7 +81,7 @@ def protect_day(tracknumber: str):
     if TrackNumber is not None and len(TrackNumber) != 0:
         try:
             query.execute(f'UPDATE {options.Main_Table} SET Protect_days = "{protect_days}"'
-                          f' WHERE Trackcode = "{tracknumber}"')
+                          f' WHERE Trackcode = "{tracknumber}" AND id = "{track_id}"')
         except Error as e:
             print(f'ОШИБКА при записи количества дней защиты покупателей: {e} по {tracknumber}.')
     connection.commit()
@@ -96,7 +96,7 @@ for number in range(len(results)):
         TrackNumber = results[number][1]
         print(f'{number + 1} из {len(results)}. Обработка трек-номера c ID: {ID} TrackCode: {TrackNumber}')
         if TrackNumber is not None and len(TrackNumber) != 0:
-            protect_day(TrackNumber)
+            protect_day(TrackNumber, ID)
 
     elif len(results) == 0:
         print('Список трек-номеров для обработки пуст. Проверьте StartIndex')
