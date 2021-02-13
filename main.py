@@ -231,12 +231,11 @@ def protect_day(tracknumber: str):
     if protect_days < 0:
         protect_days = 0
     # Write proctect_days in DB
-    if TrackNumber is not None and len(TrackNumber) != 0:
-        try:
-            query.execute(f'UPDATE {options.Main_Table} SET Protect_days = "{protect_days}"'
-                          f' WHERE Trackcode = "{tracknumber}"')
-        except Error as e:
-            print(f'ОШИБКА при записи количества дней защиты покупателей: {e} по {tracknumber}.')
+    try:
+        query.execute(f'UPDATE {options.Main_Table} SET Protect_days = "{protect_days}"'
+                      f' WHERE Trackcode = "{tracknumber}"')
+    except Error as e:
+        print(f'ОШИБКА при записи количества дней защиты покупателей: {e} по {tracknumber}.')
     connection.commit()
 
 
