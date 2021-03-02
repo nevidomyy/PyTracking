@@ -76,8 +76,8 @@ def protect_day(tracknumber: str, track_id: int):
     if order_date is not None and len(temp) != 0:
         delta_days = order_date - cd
         protect_days = delta_days.days + options.pd
-        if protect_days < 0:
-            protect_days = 0
+        #if protect_days < 0:
+        #    protect_days = 0
         # Write proctect_days in DB
         try:
             query.execute(f'UPDATE {options.Main_Table} SET Protect_days = "{protect_days}"'
@@ -96,7 +96,7 @@ for number in range(options.pd_track_count):
         TrackNumber = results[number][1]
         print(f'{number + 1} из {len(results)}. Обработка трек-номера c ID: {ID} TrackCode: {TrackNumber}')
         if TrackNumber is not None and len(TrackNumber) != 0:
-            protect_day(TrackNumber, ID)
+            protect_day(tracknumber=TrackNumber, track_id=ID)
         if number == (options.pd_track_count - 1) or number == len(results) - 1:
             print(f'Завершение... Последний обработанный элемент: ID = {ID}')
             logging.info(f'Последний обработанный элемент: ID = {ID}')

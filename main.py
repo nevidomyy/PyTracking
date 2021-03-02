@@ -229,8 +229,8 @@ def protect_day(tracknumber: str, track_id: int):
     if order_date is not None and len(temp) != 0:
         delta_days = order_date-cd
         protect_days = delta_days.days + options.pd
-        if protect_days < 0:
-            protect_days = 0
+        #if protect_days < 0:
+        #    protect_days = 0
         # Write proctect_days in DB
         try:
             query.execute(f'UPDATE {options.Main_Table} SET Protect_days = "{protect_days}"'
