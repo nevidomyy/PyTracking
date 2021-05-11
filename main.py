@@ -229,7 +229,7 @@ def protect_day(tracknumber: str, track_id: int):
     if order_date is not None and len(temp) != 0:
         delta_days = order_date-cd
         protect_days = delta_days.days + options.pd
-        #if protect_days < 0:
+        # if protect_days < 0:
         #    protect_days = 0
         # Write proctect_days in DB
         try:
@@ -259,7 +259,7 @@ def write_empty_trackcode(empty_track_id: int) -> None:
         print(f'ОШИБКА при записи статуса в БД: {e}.')
 
     connection.commit()
-        
+
 
 def write_last_elem(last_elem: int):
     """
@@ -298,7 +298,7 @@ for number in range(options.track_count):
             print(f'Завершение холостой обработки. Последний обработанный ID = {ID}')
     elif len(results) == 0:
         print('Список трек-номеров для обработки пуст. Проверьте StartIndex')
-# in range(count) count - the number of processed tracks per run
+        # in range(count) count - the number of processed tracks per run
 for number in range(options.track_count):
     if number < len(results):
         ID = results[number][0]
@@ -309,7 +309,7 @@ for number in range(options.track_count):
             parsing(JSAnswer, TrackNumber)
             protect_day(TrackNumber, ID)
         else:
-            write_empty_trackcode(ID)            
+            write_empty_trackcode(ID)
         # writing ID for last processed Track in DataBase StartIndex Table
         if number == (options.track_count - 1) or number == len(results) - 1:
             print(f'Завершение... Запись в базу данных ID последнего обработанного элемента: ID = {ID}')
