@@ -55,6 +55,8 @@ def tracking(track: str, try_count: int) -> json:
     :return: json track info
     """
     global JSAnswer
+    JSAnswer = None
+    print(track)
     response = requests.get
     response.status_code = 0
     if try_count > options.attempts:
