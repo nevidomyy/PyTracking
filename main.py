@@ -7,6 +7,7 @@ import datetime
 import options
 import logging
 JSAnswer = ''
+track_consolidation = ''
 
 file_log = logging.FileHandler('Log.log', 'w')
 console_out = logging.StreamHandler()
@@ -56,7 +57,6 @@ def tracking(track: str, try_count: int) -> json:
     """
     global JSAnswer
     JSAnswer = None
-    print(track)
     response = requests.get
     response.status_code = 0
     if try_count > options.attempts:
@@ -109,6 +109,7 @@ def tracking(track: str, try_count: int) -> json:
                     JSAnswer = response.json()
                     return JSAnswer
                 elif response.status_code == 404:
+                    JSAnswer = None
                     return 'Error 404'
         else:
             return 'Unknown Error... Check Track Number'
@@ -174,6 +175,9 @@ def parsing(trackinfo: json, tracknumber: str):
     :param: id: current ID from database
     :return: none
     """
+    global track_consolidation
+    track_consolidation = None
+
     recorded_status = get_recorded_status(tracknumber)
     if recorded_status in options.status_stoplist:
         print(f'ПРОПУСК ОБРАБОТКИ... Причина: Статус трек-номера'
@@ -197,6 +201,14 @@ def parsing(trackinfo: json, tracknumber: str):
         track_location = ''
     except IndexError:
         track_location = ''
+
+    try:
+        track_consolidation = trackinfo["data"]["tracking_number_current"]
+    except TypeError:
+        track_consolidation = ''
+    except IndexError:
+        track_consolidation = ''
+
     status = rename_status(status_name, track_location)
     # jprint(trackinfo)
     connection = create_connection(options.My_Host, options.My_User, options.My_Password, options.My_DB_name)
@@ -286,6 +298,20 @@ def write_last_elem(last_elem: int):
     return
 
 
+def write_track_consolidation(track_number_consolidation: str, track_id: int, track_number: str) -> None:
+    """
+    :define: writing to database track number for consolidation package
+    :param track_number_consolidation: track number consolidation
+    :param track_id:current id
+    :param track_number: current track number
+    """
+    if track_number_consolidation is not None and len(track_number_consolidation) != 0:
+        print(f'ID элемента в базе: {track_id}. Трек-номер: {track_number}. '
+              f'Трек консолидации: {track_number_consolidation}')
+    else:
+        print(f'Для трек-номера {track_number} отсутствует консолидация')
+
+
 results = get_track_numbers()
 # initial run. Doesnt write info to database
 # ToDo: Первый круг в холостую, не пишем данные в базу.
@@ -301,6 +327,7 @@ for number in range(options.track_count):
     elif len(results) == 0:
         print('Список трек-номеров для обработки пуст. Проверьте StartIndex')
         # in range(count) count - the number of processed tracks per run
+# ToDo: Рабочий проход с записью в БД
 for number in range(options.track_count):
     if number < len(results):
         ID = results[number][0]
@@ -309,6 +336,8 @@ for number in range(options.track_count):
         if TrackNumber is not None and len(TrackNumber) != 0:
             tracking(TrackNumber, 0)
             parsing(JSAnswer, TrackNumber)
+            # jprint(JSAnswer)
+            write_track_consolidation(track_consolidation, ID, TrackNumber)
             protect_day(TrackNumber, ID)
         else:
             write_empty_trackcode(ID)
