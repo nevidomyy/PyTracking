@@ -226,7 +226,7 @@ def parsing(trackinfo: json, tracknumber: str):
 def protect_day(tracknumber: str, track_id: int):
     """
     :define: Receives information and processes it according to the rules.
-    Writes the result of the form: "status. Location" to the Database in the Status column
+    Writes the result of the form: days in the PD column
     :param: tracknumber: current Track Number
     :param: id: current ID from database
     """
