@@ -302,7 +302,7 @@ def write_track_consolidation(track_number_consolidation: str, track_id: int, tr
     """
     :define: writing to database track number for consolidation package
     :param track_number_consolidation: track number consolidation
-    :param track_id:current id
+    :param track_id:id for current track number
     :param track_number: current track number
     """
     if track_number_consolidation is not None and len(track_number_consolidation) != 0:
