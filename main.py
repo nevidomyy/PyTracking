@@ -37,10 +37,10 @@ def create_connection(host_name: str, user_name: str, user_password: str, db_nam
     return connection
 
 
-def jprint(obj: json):
+def j_print(obj: json):
     """
-    :param obj: JSON array
-    :return: displaying an array to the screen. for example, jprint(JSAnswer)
+    :param: obj: JSON array
+    :return: displaying an array to the screen. for example, j_print(JSAnswer)
     """
     # create a formatted string of the Python JSON object
     # ensure_ascii = False => is using for display russian characters
@@ -131,7 +131,7 @@ def get_track_numbers():
 
 def get_recorded_status(tracknumber: str):
     """
-    :param tracknumber: current TrackNumber
+    :param: tracknumber: current TrackNumber
     :return: recorded status for given TrackNumber from DataBase
     """
     connection = create_connection(options.My_Host, options.My_User, options.My_Password, options.My_DB_name)
@@ -187,7 +187,7 @@ def parsing(trackinfo: json, tracknumber: str, track_id: int):
     try:
         status_name = trackinfo["data"]["checkpoints"][0]["status_name"]
     except TypeError:
-        # if Status in array JSON doesnt exist - recording temporary status
+        # if Status in array JSON doesn't exist - recording temporary status
         status_name = options.status_waiting
     except IndexError as e:
         print(f'Произошла ошибка обновления статуса для трек-номера {tracknumber}: {e} Попробуйте позже...')
@@ -210,7 +210,7 @@ def parsing(trackinfo: json, tracknumber: str, track_id: int):
         track_consolidation = ''
 
     status = rename_status(status_name, track_location)
-    # jprint(trackinfo)
+    # j_print(trackinfo)
     connection = create_connection(options.My_Host, options.My_User, options.My_Password, options.My_DB_name)
     query = connection.cursor()
     # writing status and location into Database, column "status"
@@ -245,7 +245,7 @@ def protect_day(tracknumber: str, track_id: int):
         protect_days = delta_days.days + options.pd
         # if protect_days < 0:
         #    protect_days = 0
-        # Write proctect_days in DB
+        # Write protect_days in DB
         try:
             query.execute(f'UPDATE {options.Main_Table} SET Protect_days = "{protect_days}"'
                           f' WHERE Trackcode = "{tracknumber}" AND id = "{track_id}"')
@@ -258,9 +258,9 @@ def protect_day(tracknumber: str, track_id: int):
 
 def write_empty_trackcode(track_id: int) -> None:
     """
-    :define: writting default status for empty track number. Status is defined in options file
+    :define: writing default status for empty track number. Status is defined in options file
     :return: none
-    :param: empty_track_id: this id for string where finded empty track number
+    :param: empty_track_id: this id for string where found empty track_number
     """
     connection = create_connection(options.My_Host, options.My_User, options.My_Password, options.My_DB_name)
     query = connection.cursor()
@@ -318,7 +318,7 @@ def main():
         all_track_count = options.track_count
     else:
         all_track_count = len(results)
-    # initial run. Doesnt write info to database
+    # initial run. Doesn't write info to database
     for number in range(options.track_count):
         if number < len(results):
             track_id = results[number][0]
@@ -332,7 +332,7 @@ def main():
         elif len(results) == 0:
             print('Список трек-номеров для обработки пуст. Проверьте StartIndex')
             # in range(count) count - the number of processed tracks per run
-    # Working run. Doesnt write info to database
+    # Working run. Doesn't write info to database
     for number in range(options.track_count):
         if number < len(results):
             track_id = results[number][0]
@@ -342,7 +342,7 @@ def main():
             if track_number is not None and len(track_number) != 0:
                 tracking(track_number, 0)
                 parsing(JSAnswer, track_number, track_id)
-                # jprint(JSAnswer)
+                # j_print(JSAnswer)
                 write_track_consolidation(track_consolidation, track_id, track_number)
                 protect_day(track_number, track_id)
             else:
