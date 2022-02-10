@@ -167,9 +167,8 @@ def rename_status(status_name: str, track_location: str) -> str:
 
 def parsing(trackinfo: json, tracknumber: str, track_id: int):
     """
-    # ToDo: parsing function
     :define: Receives information and processes it according to the rules.
-     Writes the result of the form: "status. Location" to the Database in the Status column
+    Writes the result of the form: "status. Location" to the Database in the Status column
     :param: trackinfo: JSON info from function tracking(track: str)
     :param: tracknumber: current Track Number
     :param: track_id: current ID from database
