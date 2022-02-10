@@ -165,14 +165,14 @@ def rename_status(status_name: str, track_location: str) -> str:
     return f'{status_name}. {track_location}'
 
 
-def parsing(trackinfo: json, tracknumber: str):
+def parsing(trackinfo: json, tracknumber: str, track_id: int):
     """
     # ToDo: parsing function
     :define: Receives information and processes it according to the rules.
      Writes the result of the form: "status. Location" to the Database in the Status column
     :param: trackinfo: JSON info from function tracking(track: str)
     :param: tracknumber: current Track Number
-    :param: id: current ID from database
+    :param: track_id: current ID from database
     :return: none
     """
     global track_consolidation
@@ -181,7 +181,7 @@ def parsing(trackinfo: json, tracknumber: str):
     recorded_status = get_recorded_status(tracknumber)
     if recorded_status in options.status_stoplist:
         print(f'ПРОПУСК ОБРАБОТКИ... Причина: Статус трек-номера'
-              f' в базе данных с ID {ID} в Стоп-листе - "{recorded_status}"')
+              f' в базе данных с ID {track_id} в Стоп-листе - "{recorded_status}"')
         return
 
     try:
@@ -228,7 +228,7 @@ def protect_day(tracknumber: str, track_id: int):
     :define: Receives information and processes it according to the rules.
     Writes the result of the form: days in the PD column
     :param: tracknumber: current Track Number
-    :param: id: current ID from database
+    :param: track_id: current ID from database
     """
     # Get current date
     cd = datetime.datetime.now()
@@ -256,7 +256,7 @@ def protect_day(tracknumber: str, track_id: int):
         print(f'Пустая дата в строке с ID = {track_id}')
 
 
-def write_empty_trackcode(empty_track_id: int) -> None:
+def write_empty_trackcode(track_id: int) -> None:
     """
     :define: writting default status for empty track number. Status is defined in options file
     :return: none
@@ -265,10 +265,10 @@ def write_empty_trackcode(empty_track_id: int) -> None:
     connection = create_connection(options.My_Host, options.My_User, options.My_Password, options.My_DB_name)
     query = connection.cursor()
     status = options.emptystatus
-    print(f'ВНИМАНИЕ... Причина: Пустой трек-номер в строке с ID {ID}')
+    print(f'ВНИМАНИЕ... Причина: Пустой трек-номер в строке с ID {track_id}')
     try:
-        query.execute(f'UPDATE {options.Main_Table} SET Status = "{status}" WHERE ID = "{empty_track_id}"')
-        print(f'Для пустого трек-номера в строке с {ID} в базу данных записан статус: {status}')
+        query.execute(f'UPDATE {options.Main_Table} SET Status = "{status}" WHERE ID = "{track_id}"')
+        print(f'Для пустого трек-номера в строке с {track_id} в базу данных записан статус: {status}')
     except Error as e:
         print(f'ОШИБКА при записи статуса в БД: {e}.')
 
@@ -312,39 +312,49 @@ def write_track_consolidation(track_number_consolidation: str, track_id: int, tr
         print(f'Для трек-номера {track_number} отсутствует консолидация')
 
 
-results = get_track_numbers()
-# initial run. Doesnt write info to database
-# ToDo: Первый круг в холостую, не пишем данные в базу.
-for number in range(options.track_count):
-    if number < len(results):
-        ID = results[number][0]
-        TrackNumber = results[number][1]
-        print(f'{number + 1} из {len(results)}. Холостая обработка трек-номера c ID: {ID} TrackCode: {TrackNumber}')
-        if TrackNumber is not None and len(TrackNumber) != 0:
-            tracking(TrackNumber, 0)
-        if number == (options.track_count - 1) or number == len(results) - 1:
-            print(f'Завершение холостой обработки. Последний обработанный ID = {ID}')
-    elif len(results) == 0:
-        print('Список трек-номеров для обработки пуст. Проверьте StartIndex')
-        # in range(count) count - the number of processed tracks per run
-# ToDo: Рабочий проход с записью в БД
-for number in range(options.track_count):
-    if number < len(results):
-        ID = results[number][0]
-        TrackNumber = results[number][1]
-        print(f'{number + 1} из {len(results)}. Обработка трек-номера c ID: {ID} TrackCode: {TrackNumber}')
-        if TrackNumber is not None and len(TrackNumber) != 0:
-            tracking(TrackNumber, 0)
-            parsing(JSAnswer, TrackNumber)
-            # jprint(JSAnswer)
-            write_track_consolidation(track_consolidation, ID, TrackNumber)
-            protect_day(TrackNumber, ID)
-        else:
-            write_empty_trackcode(ID)
-        # writing ID for last processed Track in DataBase StartIndex Table
-        if number == (options.track_count - 1) or number == len(results) - 1:
-            print(f'Завершение... Запись в базу данных ID последнего обработанного элемента: ID = {ID}')
-            write_last_elem(ID)
-            logging.info(f'Последний обработанный элемент: ID = {ID}')
-    elif len(results) == 0:
-        print('Список трек-номеров для обработки пуст. Проверьте StartIndex')
+def main():
+    results = get_track_numbers()
+    if options.track_count < len(results):
+        all_track_count = options.track_count
+    else:
+        all_track_count = len(results)
+    # initial run. Doesnt write info to database
+    for number in range(options.track_count):
+        if number < len(results):
+            track_id = results[number][0]
+            track_number = results[number][1]
+            print(f'{number + 1} из {all_track_count}. Холостая обработка трек-номера c ID:'
+                  f' {track_id} TrackCode: {track_number}')
+            if track_number is not None and len(track_number) != 0:
+                tracking(track_number, 0)
+            if number == (options.track_count - 1) or number == len(results) - 1:
+                print(f'Завершение холостой обработки. Последний обработанный ID = {track_id}')
+        elif len(results) == 0:
+            print('Список трек-номеров для обработки пуст. Проверьте StartIndex')
+            # in range(count) count - the number of processed tracks per run
+    # Working run. Doesnt write info to database
+    for number in range(options.track_count):
+        if number < len(results):
+            track_id = results[number][0]
+            track_number = results[number][1]
+            print(f'{number + 1} из {all_track_count}. Обработка трек-номера c ID:'
+                  f' {track_id} TrackCode: {track_number}')
+            if track_number is not None and len(track_number) != 0:
+                tracking(track_number, 0)
+                parsing(JSAnswer, track_number, track_id)
+                # jprint(JSAnswer)
+                write_track_consolidation(track_consolidation, track_id, track_number)
+                protect_day(track_number, track_id)
+            else:
+                write_empty_trackcode(track_id)
+            # writing id for last processed Track in DataBase StartIndex Table
+            if number == (options.track_count - 1) or number == len(results) - 1:
+                print(f'Завершение... Запись в базу данных ID последнего обработанного элемента: ID = {track_id}')
+                write_last_elem(track_id)
+                logging.info(f'Последний обработанный элемент: ID = {track_id}')
+        elif len(results) == 0:
+            print('Список трек-номеров для обработки пуст. Проверьте StartIndex')
+
+
+if __name__ == "__main__":
+    main()
