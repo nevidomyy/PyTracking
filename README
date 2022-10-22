@@ -1,0 +1,29 @@
+Программа для заполнения информации о доставке и местонахождении посылок.
+Программа проверяет трек-номера из базы данных и заполняет информацию о текущем статусе посылки.
+Главное требование заказчика:
+  1.Обработка пачками за один проход (например, 300 трек-номеров за один запуск)
+  2.Использование SQL запросов, без использования ORM.
+  3.Учесть особенности API GdePosilka (ограничения количества запросов на единицу времени)
+  4.Два прохода работы ПО:
+    Первый проход для инициализации трек-номеров в сервисе GdePosilka, особенность API. Без записи в БД. 
+    Второй проход - рабочий, с записью данных в БД
+Стек:
+  Python3
+  MySQL
+  API GdePosilka
+
+
+
+A program for filling in information about the delivery and location of parcels.
+The program checks the track numbers from the database and fills in information about the current status of the parcel.
+The main requirement of the customer:
+1. Processing in batches in one pass (for example, 300 track numbers in one run)
+2. Using SQL queries, without using ORM.
+3.Take into account the features of the Gdeposylka API (restrictions on the number of requests per unit of time)
+4.Two passes of work on:
+feature-the numbers in the service Where the parcel is, the feature of the interface and API. Without writing to the database.
+The second pass is a working one, with data entry in the database
+Stack:
+  Python 3
+  MySQL
+  API Gdeposylka
